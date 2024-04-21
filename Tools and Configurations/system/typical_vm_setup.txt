@@ -1,0 +1,44 @@
+---------------------------------------------|
+--- VM 310 -- SETUP EXAMPLE CONFIGURATION ---|
+---------------------------------------------|
+
+-> General - Node = node-pve2
+-> General - VM ID = 310
+-> Type = Template Ubuntu Server
+-> General - Name = Prod-Docker-Compose011
+-> System - OS Image Storage = local 
+-> System - ISO = ubuntu-20.04.6-live-server-amd64.iso
+-> System - BIOS = Default ; Machine = Default (i440fx) ; BIOS = Default (SealBIOS)
+-> Disks - Bus/Device = SCSI
+-> Disks - SCSI Controller = VirtIO SCSI single
+-> Disks - Storage = Local 
+-> Disks - Format - VMware image format
+-> Disks - Cache = Default (No cache)
+-> Disks - Discard = Enabled
+-> Disks - IO thread = Enabled
+-> Disk Size = 15Go
+-> Boot order = scsi0, ide2, net0
+-> QEMU Guest Agent = Enabled
+-> CPU - Sockets = 1
+-> CPU - CPU Units = 1024
+-> CPU - Total cores = 9
+-> CPU - VCPUs = 9
+-> Memory - Memory (MIB) = 9048
+-> Memory - Minimum memory (MIB) = 1024 
+-> Memory - Ballooning Device = Enabled
+-> Network - bridge = vmbr1
+-> Network - firewall = yes
+-> Network - tag = 500
+-> Network - Model = VirtIO (paravirtualized)
+-> Basic Service installed = Open SSH + Docker
+
+
+--------------------------------|
+--- VM -- PROD OKEN CARS 001 ---|
+--------------------------------|
+
+->> VM_Name =  okencars001
+->> hostname = oken-cars.oken.lan
+->> username = oken
+->> userpassword = oken242$011!
+->> IP = 10.10.10.19

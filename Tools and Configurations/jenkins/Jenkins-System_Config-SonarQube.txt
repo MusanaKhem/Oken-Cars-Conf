@@ -1,0 +1,18 @@
+# Jenkins-System_Config-SonarQube.txt
+
+SonarQube Server
+
+	1) -> Name = SonarQube-Server-Oken-Cars
+
+	2) -> Server URL = 1O.1.1OO.11
+
+	3) -> Server authentication token
+		* Click on "Add Jenkins"
+		* Domain = Global credentials (unrestricted)
+		* Kind = Secret text
+		* Scope = Global (Jenkins, nodes, ...)
+		* Secret -generate on sonarqube web interface security - generate token) = xxx
+		* ID = Oken-cars-01-Sonar-Scan-Token-Credential
+		* Description = OkenCars SonarQube Token for Sonar Scan
+
+	-> Click on "Add"

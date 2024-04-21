@@ -1,0 +1,14 @@
+----------------------------------------------------
+---------------- ADD HOST OVERRIDES ----------------
+----------------------------------------------------
+
+-> Go to "Services"
+-> Click on "DNS Resolver"
+-> Go to "General Settings"
+-> Scroll down to "Host Overrides"
+-> Click on "Add"
+-> Enter an Host Name = "oken-cars2"
+-> Enter a Parent domain of host = "oken.lan"
+-> Enter an IP to return for host = "10.10.10.28"
+-> Enter a Description = "Oken Cars Application Server 2"
+-> Click on "Save"

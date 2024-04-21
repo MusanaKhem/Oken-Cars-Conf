@@ -1,0 +1,719 @@
+-------------------------|
+--- VM -- SONARQUBE -----|
+-------------------------|
+
+Name =  sonarqubeserver011
+hostname = prod-sonarqube-011
+username = prodsonarqube
+userpassword = oken242
+ip = 10.10.10.20
+
+
+-------------------------------------------------|
+--- SONARQUBE VM SETTING USING SHELL COMMANDS ---|
+-------------------------------------------------|
+
+-------------------------------------------------------------------------------------------
+1) Connection distante en ssh à la VM Sonarqube en copiant la clé ssh de Jenkins -- DONE --
+-------------------------------------------------------------------------------------------
+-> Get the id_rsa.pub on DockerServer (where Jenkins is installed)
+-> Connect in ssh mode to "prod-sonarqube-011" VM
+-> ssh -i  @'vm.ip.address'
+-> Yes to accept key fingerprint SHA56:....
+
+----------------------------
+!! OR MOST SECURE METHOD !!
+----------------------------
+
+On Docker Server -- VM CONSOLE -- 
+-> cd /home/dockercompose/
+-> ssh-keygen
+-> Indicate the path where the private key is stored = "/home/dockercompose/.ssh/id_rsa"
+-> Presse "ENTER"
+-> Presse "ENTER"
+-> Presse "ENTER"
+
+-> cd /home/oken/
+-> ssh-copy-id -f prodsonarqube@10.10.10.20
+-> 
+
+
+-----------------------------------------------------
+2) Into Sonarqube machine, change hostname -- DONE --
+-----------------------------------------------------
+-> sudo hostnamectl set-hostname prodsonarqube
+-> /bin/bash
+
+
+-------------------------------------------------------
+3) Into the Jenkins machine, change hostname -- DONE --
+-------------------------------------------------------
+-> sudo hostnamectl set-hostname prodjenkins
+-> /bin/bash
+-> clear
+
+
+---------------------------------------------------------------------
+4) Into Sonarqube machine, Update and Upgrade the registry -- DONE --
+---------------------------------------------------------------------
+-> sudo apt update
+-> sudo apt upgrade
+
+
+--------------------------
+5) Install Java -- DONE --
+--------------------------
+-> sudoapt-get install default-jdk -y
+-> sudo apt install openjdk-17-jre -y
+
+
+-------------------------------------
+6) Go to Sonarqube website -- DONE --
+-------------------------------------
+-> Click on icon menu ; select "Download"
+-> Select "Community Edition" "Download for free" button
+-> Mouse's right click
+-> Copy the download link
+-> https://www.sonarsource.com/products/sonarqube/downloads/success-download-community-edition/
+
+
+------------------------------------------
+7) In the Sonarqube VM terminal -- DONE --
+------------------------------------------
+-> wget https://www.sonarsource.com/products/sonarqube/downloads/success-download-community-edition/
+https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-10.2.1.78527.zip
+
+
+-------------------------------------------
+8) See the zip folder downloaded -- DONE --
+-------------------------------------------
+-> ls
+
+
+---------------------------------------
+10) Install Unzip the folder -- DONE --
+---------------------------------------
+-> sudo apt install unzip
+
+
+-------------------------------
+11) Unzip the folder -- DONE --
+-------------------------------
+-> unzip 'folder name'
+
+
+-------------------------------------
+12) See the folder unziped -- DONE --
+-------------------------------------
+-> ls
+
+
+--------------------------------------------------------------------------
+13) Go to the unziped sonarqube folder and go to the bin folder -- DONE --
+--------------------------------------------------------------------------
+-> cd 'sonarqube folder name'/bin/
+
+
+------------------------------------------------------------
+14) You can see 3 folders (Linux, MacOS, Windows) -- DONE --
+------------------------------------------------------------
+-> Cause we are using Linux
+-> Select Linux folder
+-> cd linux-x86-64
+-> You can see a shell 'sh' script named "sonar.sh"
+-> Execute the script with specific parameters { console | start | stop | force-stop | restart | status | dump }
+-> In our case we want to use sonarqube console
+-> ./sonar.sh console
+
+
+-------------------------------------------------------------------------------
+(15) On the firewall of our machine |and|or| the firewall of our LAN -- DONE --
+-------------------------------------------------------------------------------
+-> Not necessary in our case ; cause of we use pfsense
+-> Add inbound rules
+-> Custom TCP (type) ; TCP (protocol) ; 3011 (port range) ; Anywhere 0.0.0.0/0 (source) ; SonarQube-rule (description)
+
+
+------------------------------------------------------
+16) Using Sonarqube Web Interface / Console -- DONE --
+------------------------------------------------------
+-> Copy the machine IP address
+-> "10.10.10.20"
+-> In your browser open a new windows
+-> the copied IP address and add the port to the web request
+----> http://10.10.10.20:9000/sonar
+-> Press "ENTER" on your keyboard to lunch the web request
+-> As you can see Sonarqube Console is loading
+
+
+------------------------------------------------------
+17) Connect to Sonarqube for the first time -- DONE --
+------------------------------------------------------
+-> default username : "admin"
+-> default password : "admin"
+
+
+-----------------------------------
+18) Update your password -- DONE --
+-----------------------------------
+-> Old password
+-> "admin"
+-> New password
+-> "oken242"
+-> Confirm password
+-> "oken242"
+-> Do not save your new password in the browser
+-> Save your new password in Keepass or other password manager
+
+
+-----------------------------------------------
+19) Select a type of projet to start -- DONE --
+-----------------------------------------------
+-> See, select and click on the "Create a project Manually" box (with '<>' symbol/icon)
+-> This will allow you to create AND test a new project
+
+
+---------------------------------------
+20) Section Create a project -- DONE --
+---------------------------------------
+-> Complete Project display name
+-> "Prod-Docker-Compose-011-Scan"
+-> Complete Project key (it seems to be exactly the same name as Project display one)
+-> "Prod-Docker-Compose-011-Scan"
+-> Indicate Main branch name to execute Sonarqube services
+-> "main" or try "develop"
+-> In my case, I tried develop to make a test on development condition
+-> Click on "Set Up" button
+-> 
+-> Set up project for Clean as You Code
+-> Choose the case which is used for your project
+-> In our case we choose "Reference branch"
+-> Click on "Create project" button
+
+
+-----------------------------------------------------------------
+21) In Prod-Docker-Compose-011-Scan's Project Overview -- DONE --
+-----------------------------------------------------------------
+-> It is asked us to choose the Tutorial Service
+FIRST QUESTION -> How do you want to analyze your repository ?
+-> No need to answer. This is an introducing question.
+SECOND QUESTION -> Do you want to integrate with your favorite CI ? Choose one of the following tutorials.
+-> Select "With Jenkins" box
+THID QUESTION -> Are you testing or have an advanced use-case ?
+-> No need to select the box
+ANALYSE YOUR PROJECT WITH JENKINS
+> Select your DevOps platform
+-> Clik on "GitLab" button
+>Prerequisites
+-> Then click on "Configure Analysis"
+>Create a Pipeline Job
+-> Create a Pipeline Job  (to automatically analyze our project)
+-> See the main steps if you want to learn more
+-> Click on "Continue" button
+>Create a GitLab Webhook
+-> See how to add a webhook if you want to learn more
+-> Click on "Continue" button
+>Create a Jenkinsfile
+-> Click on "Maven" |or| "Other (for JS, TS, Go, Python, PHP, ...)" button project type
+-> In our cas, we choose "Other (for JS, ...)" option (later we will create a scan for Maven project code)
+-> Copy the first text "sonar.projectKey=Prod-Docker-Compose-011-Scan" -- that is the 'project key'
+-> Create a "sonar-project.properties" file and paste the sonar.projectKey
+-> Copy the Jenkinsfile text and add it in your Jenkinsfile or Jenkinsfile.groovy
+-> In our case, we modify our Jenkinsfile.groovy with the bellow sentences code :
+START
+...
+        stage('SCM'){
+            checkout scm
+        }
+		stage('SCM'){
+		    mvn clean verify sonar:sonar \
+            -Dsonar.projectKey=Prod-Docker-Compose-011-Scan \
+            -Dsonar.projectName='Prod-Docker-Compose-011-Scan' \
+            -Dsonar.host.url=http://10.10.10.20:9000 \
+            -Dsonar.token=sqp_917fd24b2d5e69ab60dd2939bab36cb653fcb25a
+        }
+        stage('SonarQube Analysis'){
+            def scannerHome = tool 'SonarScanner';
+            withSonarQubeEnv(''){
+                sh "${scannerHome}/bin/sonar-scanner"
+            }
+        }	
+...
+END
+>You're all set!
+>Configuration of our job is finished 
+-> Go out by clicking on Dashboard icon
+> Let's wait few seconds cause Sonarqube Console is making the first analysis
+
+
+------------------------------------------
+22) At the top left of the page -- DONE --
+------------------------------------------
+-> Click on "Admin Account icon" --> "My account"
+-> Click on "Security"
+>Generate Tokens
+-> Name = Sonarqube011-Token |or| Sonarqube-Token
+-> Type = Project Analysis
+-> Associated Project name = Prod-Docker-Compose-011-Scan
+-> Expires = 
+|OR|
+-> Name = Sonarqube011-Token |or| Sonarqube-Token
+-> Type = Global Analysis Token
+-> Expires in = No expiration
+
+-> In our case, we selected Project Analysis Token"
+-> We also selected "Prod-Docker-Compose-011-Scan" project
+-> Expires in = "No expiration"
+-> Click on "Generate"
+-> Copy the sqa token numbers "sqa_xxxxxxxxxxxxxxx..."
+-> Paste it in an other blank file = "cf.keepass"
+
+
+-------------------------------------------------------------------
+23) On Jenkins Dashboard -- To install SonarQube Scanner -- DONE --
+-------------------------------------------------------------------
+-> Click on "Manage Jenkins"
+-> Click on "Manage Plugins"
+-> Click on "Available Plugins"
+-> Search "SonarQube Scanner" plugin
+-> Check "SonarQube Scanner" box
+-> Click on "Install without restart"
+
+
+-----------------------------------------------------------------------------------
+24) Return to "Manage Jenkins", "Manage Plugins" and "Available Plugins" -- DONE --
+-----------------------------------------------------------------------------------
+-> Search "SSH2 Easy" plugin
+-> Check "SSH2 Easy" box
+-> Click on "Install without restart"
+
+
+-----------------------------------------
+25) Return to "Manage Jenkins" -- DONE --
+-----------------------------------------
+-> Click on "Global Tool Configuration"
+-> Scroll down and see "SonarQube Scanner installation" or maybe "SonarQube Scanner" for your Jenkins version
+-> Click on "Add SonarQube Scanner" button
+-> Check the "Install automatically" box
+-> Give any name that you want
+-> "SonarScanDockerCompose011"
+-> Click on "Apply" button
+-> Click on "Save" button
+
+
+----------------------------------
+26) In "Manage Jenkins" -- DONE --
+----------------------------------
+-> Clik on "Configure System"
+-> Scroll down to SonarQube servers
+-> Click on "Add SonarQube"
+-> Give any name that you want
+-> "SonarQube-Server"
+-> Server URL = http://10.10.10.20:9000
+-> Server authentication token = none
+-> Click on "Apply" button
+-> Click on "Save" button
+
+
+-----------------------------------
+27) On Jenkins dashboard -- DONE --
+-----------------------------------
+-> Select the pipeline which must be analyze by SonarQubeScan
+-> In our case, click on "Docker-Compose-Template-Pipeline-01
+-> Click on "Configure" button
+-> Scroll down to the Build Steps section
+-> Click on the bar and select = "Execute SonarQube Scanner"
+-> Go to Analysis field and paste the copied project key and 
+START
+"sonar.projectKey=Prod-Docker-Compose-011-Scan"
+END
+-> Click on "Apply" button
+-> Click on "Save" button
+
+
+-----------------------------------------
+28) Return to "Manage Jenkins" -- DONE --
+-----------------------------------------
+-> Click on "Configure System"
+-> Scroll down to the SonarQube Scanner section
+-> In Server authentication token
+-> Click on "Add" button
+-> Select "Jenkins"
+-> Domain (select) = "Global credentials (unrestricted)"
+-> Kind (Secret type) = select "Secret text" 
+-> Scope = Global (Jenkins, nodes ... etc)
+-> Secret (paste the sqa token numbers) = "sqa_xxxxxxxxxxxxxxx..." (cf. Keepass)
+sqp_917fd24b2d5e69ab60dd2939bab36cb653fcb25a
+-> ID (choose any idea you want) = "Sonar-Token-011-Scan-Credential"
+-> Description (as you want) = SonarQube server for "Docker-Compose-011-Sonar-Scan-Token-Credential" job authentication by Jenkins
+-> Click on "Apply" button
+-> Click on "Save" button
+
+mvn clean verify sonar:sonar \
+  -Dsonar.projectKey=Prod-Docker-Compose-011-Scan \
+  -Dsonar.projectName='Prod-Docker-Compose-011-Scan' \
+  -Dsonar.host.url=http://10.10.10.20:9000 \
+  -Dsonar.token=sqp_917fd24b2d5e69ab60dd2939bab36cb653fcb25a
+
+--------------------------|
+!!! BE CAREFUL PLEASE !!! |
+--------------------------|
+-> Do not forget to push your code on the correct branch. 
+-> GitLab repository must show you the last modification ("Jenkinsfile.groovy" and "sonar-project.properties")
+
+
+------------------------------------------
+29) On Jenkins Dashboard -- BUILD ERROR --
+------------------------------------------
+
+Errors origins ==> sonar.project.properties & Jenkinsfile  --
+
+-> Click on the choosen pipeline
+-> In our case "Docker-Compose-Template-Pipeline-01"
+-> Click on "Build Now" to build the pipeline
+-> Verify if it's correctly working our not
+-> Wait until you have the trigger result "SUCCESS"
+-> On pipeline dashboard you can see two different state
+-----> SonarQube Quality Gate (associate with its symbol/icon)
+-----> Sonar-Token-011-Scan = Passed
+-----> server-side processing : Success
+
+
+-----------------------------------
+30) On SonarQube Console --  --
+-----------------------------------
+-> On Dashboard Project, before set the job and configure Jenkins and the pipeline
+-> Normally the central screen is empty
+-> Refresh the page
+-> As you can see, then SonarQube can now scan our pipeline 
+
+
+---------------------------------
+34) On DockerServer VM --  --
+---------------------------------
+-> Connect to DockerServer in ssh mode = "ssh oken@10.10.10.212" psswd "cf Keepass"
+-> We connect to Docker Server VM to catch the ssh public key
+-> 	To see if there are any public key 
+-> ls -al ~/.ssh
+-> If you see a file with extension ".pub" then you find it
+-> Remember the path of that file = ".ssh/id_rsa.pub"
+
+
+-----------------------------------------------------
+35) Deploy our code from Jenkins to Docker --  --
+-----------------------------------------------------
+-> We connect in ssh mode to the VM and using Jenkins ssh public key
+-> 
+
+
+--------------------------------------------------------------------------------------
+36) Docker-Compose-Template-Pipeline-01 -- Configure Build Triggers AND Build Steps --
+--------------------------------------------------------------------------------------
+Build Triggers 
+-> Enable => Build when a change is pushed to GitLab
+-> Copy => http://10.10.10.212:8080/project/Docker-Compose-Template-Pipeline-01
+
+Build Triggers Advanced
+-> Secret token => bbaec436c8135f66fb4e5fefd4cb6802
+ 
+Build Steps
+-> Path to project properties => sonar-project.properties
+-> 
+
+
+---------------------------------------------------------------------
+37) IN THE PROJECT home code folde -> SET sonar properties ----------
+---------------------------------------------------------------------
+==> Create a file named = "sonar-project.properties
+
+sonar.projectKey=Prod-Docker-Compose-011-Scan
+sonar.projectName=Prod-Docker-Compose-011-Scan
+sonar.projectVersion=1.0
+sonar.sources=angular/src/app
+sonar.language=java
+sonar.java.binaries=/var/lib/jenkins/workspace/Docker-Compose-Template-Pipeline-01/target/classes
+sonar.exclusions=/spring/src/test/java/com/oken/cars/okencars/*.java
+
+
+---------------------------------------------
+39) IN SONARQUBE PROJECT -- 
+---------------------------------------------
+-> Select and clik on the project "Prod-Docker-Compose-011-Scan"
+-> Go to project settings
+-> Select "Project settings"
+-> Select and Click on "Quality Profiles" button
+-> Click on "Add language" button
+a) Select "CSS" language && select "Sonar way" as a specific Quality Profile
+b) Select "HTML" language && select "Sonar way" as a specific Quality Profile
+c) Select "Java" language && select "Sonar way" as a specific Quality Profile
+d) Select "JavaScript" language && select "Sonar way" as a specific Quality Profile
+e) Select "TypeScript" language && select "Sonar way" as a specific Quality Profile
+-> Apply and Save settings
+
+
+---------------------------------------------
+40) IN SONARQUBE PROJECT -- 
+---------------------------------------------
+-> Go to project settings
+-> Select "Project settings"
+-> Select and Click on "Quality Gate" button
+-> Select "Always use a specific Quality Gate" => "Sonar way"
+-> Click on "Save" button
+-> 
+
+
+---------------------------------------------
+41) ON JENKINS -- Manage Jenkins 
+---------------------------------------------
+-> Go to "Manage Jenkins"
+-> Select "Configure System" or "System"
+-> Scroll to "SonarQube servers" section
+-> Verify if "Environment variables Enable injection..." box is correctly checked
+-> Scroll to "Server Groups Center"
+-> Click on "Add" button (to add a group server)
+-> Group Name = "Docker Servers"
+-> SSH Port = "22"
+-> User Name = "dockercompose"
+-> Password = "password you choose when you've createn the docker VM"
+-> Click on "Apply" button
+-> Click on "Save" button
+
+
+---------------------------------------------
+42) ON JENKINS -- Manage Jenkins
+---------------------------------------------
+-> Go to "Manage Jenkins"
+-> Select "Configure System" or "System"
+-> Scroll to "Server Groups Center"
+-> Click on "Add" button (to add a server)
+-> Server Groups = Select "Docker Servers"
+-> Server Name = "prod-docker"
+-> Server IP = "10.10.10.27"
+-> Click on "Apply" button
+-> Click on "Save" button
+
+
+-----------------------------------------------------------
+43) ON JENKINS -- DASHBOARD -- ADD REMOTE SHELL COMMAND 
+-----------------------------------------------------------
+-> Go to "Project Docker-Compose-Template-Pipeline-01"
+-> Select "Configure"
+-> Scroll to "Build Steps"
+-> Path to project properties = sonar-project.properties
+-> Analysis properties =
+		sonar.projectKey=oken-cars
+		sonar.projectName=oken-cars
+		sonar.projectVersion=1.0
+		sonar.sources=angular/src/app
+		sonar.language=java
+		sonar.java.binaries=/var/lib/jenkins/workspace/oken-cars/target-test/classes
+		sonar.exclusions=/spring/src/test/java/com/oken/cars/okencars/*.java
+
+-> Additional arguments = -X
+-> Click on "Add build step" button
+-> Select "Remote Shell"
+-> Target Server = Select createn server "Docker Servers~~prod-docker~~~10.10.10.27"
+-> shell =
+"cd
+touch new_pipeline01_script.sh
+echo "#!bin/bash\n sh docker ps\n sh docker images\n sh docker volume ls\n sh whereis mvn\n sh mvn --version\n sh whereis java\n sh java --version\n sh whereis git\n sh git --version\n sh whereis docker\n sh docker --version\n sh whereis docker-compose\n sh docker-compose --version" >> new_script.sh"
+-> Click on "Apply" button
+-> Click on "Save" button
+-> Click on "Build Now" button
+-> Wait until you have the trigger result "SUCCESS"
+-> On pipeline dashboard you can see two different state
+-----> SonarQube Quality Gate (associate with its symbol/icon)
+-----> Sonar-Token-011-Scan = Passed
+-----> server-side processing : Success
+
+
+-----------------------------------------------------------
+44) ON DOCKER SERVER -- VM CONSOLE -- 
+-----------------------------------------------------------
+-> cd /home/dockercompose/
+-> ssh-keygen
+-> Indicate the path where the private key is stored = "/home/dockercompose/.ssh/id_rsa"
+-> Presse "ENTER"
+-> Presse "ENTER"
+-> Presse "ENTER"
+
+
+-----------------------------------------------------------
+45) ON DOCKER SERVER -- VM CONSOLE -- 
+-----------------------------------------------------------
+-> cd /home/oken/
+-> ssh-copy-id -f dockercompose@10.10.10.27
+-> 
+-> 
+-> 
+
+
+-----------------------------------------------------------
+46) ON DOCKER COMPOSE VM TERMINAL 
+-----------------------------------------------------------
+-> Dans le terminal du serveur "prod-docker" ; VM n° 411
+-> Vérifier que vous êtes bien au niveau du bureau de l'utilisateur
+-> cd /home/dockercompose/
+-> Créer un dossier "oken-cars-web" pour recevoir les fichiers concernant le projet de GitLab, récupéré par Jenkins
+-> mkdir oken-cars-web
+-> Accorder les droits en lecture et en écriture à l'utilisateur local ("dockercompose:dockercompose")
+-> sudo chown dockercompose:dockercompose oken-cars-web/
+-> Accorder les droits en lecture et en écriture à l'utilisateur Jenkins ("")
+-> sudo chown  "?":"?" oken-cars-web/
+
+
+-----------------------------------------------------------
+47) ON JENKINS -- DASHBOARD -- ADD EXECUTE SHELL COMMAND 
+-----------------------------------------------------------
+-> Go to Project "Docker-Compose-Template-Pipeline-01"
+-> Select "Configure"
+-> Scroll to "Build Steps"
+-> Click on "Add build step" button list
+-> Select "Execute shell"
+-> Add the following commands
+...
+START
+cd /home/dockercompose
+mkdir oken-cars-web/
+scp -r ./* dockercompose@10.10.10.27:~/oken-cars-web/
+END
+...
+-> Wait until you have the trigger result "SUCCESS"
+-> On pipeline dashboard you can see two different state
+-----> SonarQube Quality Gate (associate with its symbol/icon)
+-----> Sonar-Token-011-Scan = Passed
+-----> server-side processing : Success
+
+
+------------------------------------------------------
+48) ON DOCKERCOMPOSE VM SERVER
+------------------------------------------------------
+-> SOLVE STATE PIPELINE
+-> Error message => HOST KEY  VERIFICATION FAILED
+-> Copy ssh key to dockerserver VM
+-> ssh-copy-id -f oken@10.10.10.212
+-> password => "oken241"
+
+
+------------------------------------------------------
+49) ON DOCKERSERVER VM SERVER
+------------------------------------------------------
+-> SOLVE STATE PIPELINE
+-> Error message => HOST KEY  VERIFICATION FAILED
+-> Copy ssh key to Docker-Compose-011 VM
+-> ssh-copy-id -f dockercompose@10.10.10.27
+-> password => "kama"
+
+
+------------------------------------------------------
+50) ON JENKINS 
+------------------------------------------------------
+-> Go to "Manage Jenkins"
+-> Click on "Tools" button
+-> Scroll to "JDK Insallations" section
+-> Click on "Add JDK" button
+-> Indicate a name : "java17.0.8.1"
+-> Unselect "Intall automatically" box
+-> Add JAVA_HOME path = "/usr/lib/jvm/java-17-openjdk-amd64"
+
+
+-> Scroll to "Maven Installations" section
+-> Develop "Advanced" Maven section
+-> Change name = "maven-3.9.4"
+-> Change MAVEN_HOME = /opt/maven-3.9.4/bin/mvn
+
+-> Click on "Apply" button
+-> Click on "Save" button
+
+-> Go to "Manage Jenkins"
+-> Go to "Manage Plugins"
+-> Select "Available plugins"
+-> Search "SSH" plugin ; select and install it
+-> Search "Docker Pipeline" ; select and install it
+-> Do not restart
+-> Go to "Manage Jenkins" go to "System"
+-> Scroll down to "Global Properties"
+-> Click on "Add" button
+-> Name = "PATH"
+-> Value = "$PATH:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/usr/lib/jvm/java-17-openjdk-amd64/bin"
+-> 
+-> Nom du fichier .jar "
+-> chemin d'accès au fichier /workspace/Docker-Compose-Template-Pipeline-01/spring/target/oken-cars-web.jar
+
+
+------------------------------------------------------
+51) ON DOCKERCOMPOSE011 VM
+------------------------------------------------------
+-> Copy ssh-key
+-> cat .ssh/id_rsa
+-> Paste it in a blank file to use it later
+
+The bellow commands to add and give user permissions 
+Do the bellow commands on DOCKERCOMPOSE011 VM
+-> shell cmd => chmod go-w ~/
+-> shell cmd => chmod 700 ~/.ssh
+-> shell cmd => chmod 600 ~/.ssh/authorized_keys
+-> ssh-copy-id -f jenkins@10.10.10.212
+
+Do the bellow commands on DOCKERSERVER VM
+-> Use jenkins user
+-> su jenkins
+-> pwd
+-> ssh-keygen
+-> Path saving key => /var/lib/jenkins/.ssh/id_rsa 
+-> Press (ENTER / ENTER)
+-> ls .ssh/
+-> shell cmd => chmod go-w ~/
+-> shell cmd => chmod 700 ~/.ssh
+-> shell cmd => chmod 600 ~/.ssh/authorized_keys
+-> ssh-copy-id -f dockercompose@10.10.10.27
+-> 
+
+
+------------------------------------------------------
+52) ON JENKINS GUI
+------------------------------------------------------
+-> Go to "Manage Jenkins"
+-> Click on "Credentials" button 
+-> Click on "Global" link
+-> Click on "Add Credentials"
+-> Kind = "SSH Username with private key"
+-> Scope = "Global (Jenkins, nodes, items, all child items, etc)"
+-> ID = "dockercompose"
+-> Description = "dockercompose user ssh key"
+-> Username = "dockercompose"
+-> Select "Private Key" radio button
+-> Click on "Save" button
+
+
+-> Go to "Manage Jenkins"
+-> Click on "Configure System" button 
+-> Scroll to "SSH remote hosts" section
+-> In SSH sites part
+-> Indicate a Hostname = "prod-docker"
+-> Indicate a Port = "22"
+-> Add the credentials createn before = "dockercompose(dockercompose user ssh key)"
+-> Click on "Apply" button
+-> Click on "Save" button
+
+
+-> Go job project "Docker-Compose-Template-Pipeline-01"
+-> Configure the job
+---> Scroll to "Build Environment"
+---> Select "SSH Agent" box
+---> Select "Specific credentials" option radio button
+---> Select "dockercompose (dockercompose user ssh key)" from the credentials' list
+
+-> Scroll to "Build Steps"
+---> Scroll to "JDK" version setup in selectiong "java-17.0.8.1"
+---> Verify that "Path to project properties" is set = "sonar-project.properties"
+---> Verify that "Analysis properties" are correctly added
+---> Verify the "-X" line is put on "Additional arguments" section
+
+-> Scroll to "Execute Shell" task
+---> Verify that the scp command is correct = "scp -r ./* dockercompose@10.10.10.27:~/oken_cars_web/"
+
+
+-> TEST THE BUILD JOB AGAIN
+-> Go to the project => Docker-Compose-Template-Pipeline-01
+-> Click on "Build Now" button

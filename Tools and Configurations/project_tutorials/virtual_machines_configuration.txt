@@ -1,0 +1,551 @@
+-------------------------------------------
+VM 416 + 417 + 418 --- AND TEMPLATES 414 --
+-------------------------------------------
+
+sudo visudo
+"
+%oken ALL=(ALL) ALL
+%oken ALL=(ALL:ALL) ALL
+"
+adduser oken admin
+adduser oken sudo
+adduser oken oken
+
+hostnamectl
+sudo hostname oken-cars
+cat /etc/hostname
+hostnamectl
+invoke-rc.d hostname.sh restart
+hostnamectl
+sudo nano /etc/ssh/sshd_config file
+cat /etc/host.conf
+cat /etc/hosts
+cat /etc/hostname
+/etc/dhcp/
+ls /etc/dhcp/dhclient.conf
+cat /etc/dhcp/dhclient.conf
+
+--------------------------
+==> !! EN MODE USER !! <==
+--------------------------
+----------------------------------------------------------
+A => OTHER TROUBLESHOOT SSH ISSUE AND CONFIGURE CLEARLY -- OK
+----------------------------------------------------------
+# FROM Deployment Server TO Jenkins Server
+# --> ADD Deployment Server User .ssh/id_rsa.pub TO .ssh/authorized_keys file
+# --> On oken@oken-cars/2/3 Copy .ssh/id_rsa.pub
+# --> Return On Jenkins Server and paste the key to .ssh/authorized_keys file
+# --> On Jenkins Web Interface => create credentials ssh-private-key
+# --> Create 3 users credentials
+
+# ON Deployment Server MODIFY /etc/ssh/sshd_config file
+
+# => Activate the following line
+"
+Pubkey Authentication yes
+PasswordAuthentication yes
+"
+# => IT IS ALSO POSSIBLE TO ONLY ALLOW SPECIFC USER(S)
+# => Adding the following lines
+"
+# ADD BY H.M ON 13th OCTOBER 2023
+# Choose the user you ONLY want to give the right to acces that ser>
+# You can also allow more user, repeat the command just changing us>
+# Syntax :
+# Allow username
+# 1 Example with the bellow lines :
+Allow oken
+# With that example if there are other users on that machine, 
+# Only oken user will be able to connect to that VM using ssh mode.
+"
+# ==> Save and Exit
+
+==========================
+==> !! EN MODE USER !! <==
+==========================
+------------------------------------------------------
+B => CHECK IF IP ADDRESS IS SET AS DHCP4 OR STATICN -- OK
+------------------------------------------------------
+ll /etc/netplan/00-installer-config.yaml
+cat /etc/netplan/00-installer-config.yaml
+# The existing file looked to something like this
+"
+# This is the network config written by 'subiquity'
+network:
+  ethernets:
+    ens18:
+      dhcp4: true
+  version: 2
+"
+
+---------------------------------
+B' => TO SET STATIC IP ADDRESS -- NOT DONE | FOR INFORMATION
+---------------------------------
+sudo nano /etc/netplan/00-installer-config.yaml
+# Replace existing lines with the following ones
+"
+network:
+    version: 2
+    renderer: networkd
+    ethernets:
+        eth0:
+            addresses:
+                - 10.10.10.29/24
+            nameservers:
+                addresses: [8.8.8.8, 10.10.10.1]
+            routes:
+                - to: default
+                  via: 10.10.10.1
+"
+# => Save and Exit editor
+sudo netplan apply 
+
+
+--------------------------------------
+B'' => ON PROXMOX HYPERVISOR -- SET -- 
+--------------------------------------
+# Set node-pve2 => Hosts
+# Add the following lines
+"
+10.10.10.29 oken-cars4.oken.lan
+10.10.10.31 oken-cars.oken.lan
+10.10.10.32 oken-cars3.oken.lan
+10.10.10.33 oken-cars2.oken.lan
+"
+# Click on Save
+
+
+------------------------------
+C => 1ST UPDATE AND UPGRADE -- OK
+------------------------------
+sudo apt-get update && sudo apt-get upgrade
+
+------------------------------
+D => FIXER LES ERREURS DPKG -- OK
+------------------------------
+sudo dpkg --configure -a
+
+==========================
+==> !! EN MODE ROOT !! <==
+==========================
+--------------------------------------
+E => CONFIGURE INTERNAL VM FIREWALL -- OK
+--------------------------------------
+sudo apt-get update && sudo apt-get upgrade
+sudo ufw status numbered
+sudo apt install ufw (not necessary if already installed)
+sudo ufw status numbered
+sudo su
+sudo ufw disable (if status is already "inactive" this step is not necessary)
+sudo ufw allow proto tcp to any port 22
+sudo ufw allow proto tcp to any port 80
+sudo ufw allow proto tcp to any port 8081
+sudo ufw allow proto tcp to any port 4200
+sudo ufw allow proto tcp to any port 5432
+sudo ufw enable
+sudo ufw status numbered
+sudo reboot
+
+==========================
+==> !! EN MODE ROOT !! <==
+==========================
+-----------------------
+F => MODIFY HOST DNS -- OK
+-----------------------
+sudo nano /etc/hosts
+# -> At the top 127.0.1.1 change => dockerserver | or | DockerServer
+# -> At the line bellow add or change xxx.xxx.xxx.xxx => 10.10.10.10.28
+# -> At the end of the file add => 10.10.10.29 oken-cars.oken.lan
+"
+# The following lines for oken-cars' app
+172.20.0.2 author.sling.apache.local
+127.0.0.1 oken-cars.oken.lan
+10.10.10.29 oken-cars.oken.lan
+# End of section
+sudo reboot
+
+
+==========================
+==> !! EN MODE USER !! <==
+==========================
+------------------------------------------------------------
+G => CONFIGURE FIREWALL PFSENSE TO ADD A NEW DNS OVERRIDE -- OK
+------------------------------------------------------------
+# Se renseigner sur la notion de DRP
+# add -> Host name => oken-cars
+#     -> Description => 
+#  	  -> IP addresse => 10.10.10.29 |or| 10.10.10.31 |or| ...32 |or| ...33 
+#     -> Domain Name => oken.lan
+#     -> Save
+
+==========================
+==> !! EN MODE USER !! <==
+==========================
+------------------------------------
+H => INSTALL USEFULL DEVOPS TOOLS -- OK
+------------------------------------
+sudo dpkg --configure -a
+sudo apt-get update && sudo apt-get upgrade
+sudo apt install curl					(to download..., call api...)
+sudo apt install net-tools				(to set ip addresses)
+netstat -tunlp
+sudo apt-get update && sudo apt-get upgrade
+sudo apt install sysstat				(to use iostat cmd)
+sudo apt-get update && sudo apt-get upgrade
+sudo apt install plocate
+sudo apt-get update && sudo apt-get upgrade
+sudo dpkg --configure -a
+
+
+
+--------------------------------------------------------------------
+I => TROUBLESHOOT SSH ISSUE AND CONFIGURE CLEARLY -- EN MODE ROOT -- OK
+--------------------------------------------------------------------
+# 1)=> From Jenkins Server (Mode Root)
+# a) Verify if Jenkins already listen to port 80
+ss -antpl | grep 8080
+# b) Verify if Pubkey Authentication is activated
+cat /etc/ssh/sshd_config | grep Pubkey
+# ===> If not set "yes" then modify the line and replace "no" by "yes"
+# c) Verify if PasswordAuthentication is activated 
+cat /etc/ssh/sshd_config | grep '#PasswordAuthentication'
+# ===> If not set "yes" then modify the line and replace "no" by "yes"
+# d) Verify which ssh services are allowed
+cat /etc/ssh/sshd_config | grep 'Allow'
+# ==> Just see that part as information
+
+
+# 2)=> FROM Deployment Server (Mode User)
+# a) 
+cat /etc/ssh/sshd_config | grep 'Pubke'
+# ===> If not set "yes" then modify the line and replace "no" by "yes"
+# b) 
+cat /etc/ssh/sshd_config | grep '#PasswordAuthentication'
+# ===> If not set "yes" then modify the line and replace "no" by "yes"
+# c) 
+service sshd restart
+# d) 
+cat /etc/ssh/sshd_config | grep 'Allow'
+# ==> Just see that part as information
+
+
+=========================================
+==> !! CONNEXION AVEC LE USER OKEN !! <==
+=========================================
+----------------------------------------
+J => ON Gitlab.oken.lan Web Interface -- OK
+----------------------------------------
+user : oken
+password : oken241!!
+
+# ADD ssh-pub-key FROM oken@10.10.10.29 => id_rsa.pub
+# ADD ssh-pub-key FROM oken@10.10.10.30 => id_rsa.pub
+# ADD ssh-pub-key FROM oken@10.10.10.31 => id_rsa.pub
+# ADD ssh-pub-key FROM oken@10.10.10.32 => id_rsa.pub
+# ADD ssh-pub-key FROM oken@10.10.10.33 => id_rsa.pub
+# ADD ssh-pub-key FROM oken@10.10.10.212 => id_rsa.pub
+
+------------------------------
+K => FROM Deployment Server -- OK
+------------------------------
+ssh-keygen
+cat /etc/ssh/sshd_config | grep Pubke
+
+---------------------------
+L => From Jenkins Server -- OK
+---------------------------
+ssh -vvvv -p 22 oken@10.10.10.212
+ssh -vvvv -p 22 oken@10.10.10.29
+ssh -vvvv -p 22 oken@10.10.10.30
+ssh -vvvv -p 22 oken@10.10.10.31
+ssh -vvvv -p 22 oken@10.10.10.32
+
+-----------------------------------------------
+M => From OkenGitlab user in Jenkins Server -- OK
+-----------------------------------------------
+ssh -vvvv -p 22 oken@10.10.10.29
+ssh -vvvv -p 22 oken@10.10.10.30
+ssh -vvvv -p 22 oken@10.10.10.31
+ssh -vvvv -p 22 oken@10.10.10.32
+
+---------------------------------
++++ !! EN MODE USER OKEN !! +++ |
+---------------------------------
+---------------------------------
+N => INSTALL AND CONFIGURE GIT -- OK
+---------------------------------
+sudo apt-get update && sudo apt-get upgrade
+git --version
+git init && git config --global init.defaultBranch main && git config --global user.name "oken" && git config --global user.email hermann.matondo59@gmail.com
+which git
+git --version
+
+-------------------------------------
+O => INSTALL DOCKER version 24.0.6 -- OK
+-------------------------------------
+# Remove docker.pid to be sure that Docker default PID is free
+sudo apt remove docker-desktop
+rm -r $HOME/.docker/desktop
+sudo rm /usr/local/bin/com.docker.cli
+sudo apt purge docker-desktop
+sudo rm -rf /var/snap/docker/179/run/docker.pid
+# Verify if packages are still installed
+dpkg --list | grep docker
+# Search available docker packages
+apt-cache search docker
+# Install docker
+sudo dpkg --configure -a
+sudo apt-get update && sudo apt-get upgrade
+sudo curl -fsSL https://get.docker.com -o get-docker.sh
+ls
+sudo sh get-docker.sh
+docker --version
+sudo systemctl enable docker.service
+sudo systemctl enable containerd.service
+# Manage user and groups
+USER="oken"
+sudo groupadd docker
+sudo usermod -aG docker oken
+sudo chmod 666 /var/run/docker.sock
+# Configure system
+sudo truncate -s 0 /etc/machine-id -e 
+# Verify installation
+which docker
+sudo service docker start
+dockerd &
+sudo service docker status
+
+--------------------------------------
+P => INSTALL DOCKER-COMPOSE v2.18.1 -- OK 
+--------------------------------------
+# 1) Prepare before install
+dpkg --list | grep docker-compose
+apt-cache search docker-compose
+sudo apt-get update && sudo apt-get upgrade
+# 2) Install docker-compose
+sudo dpkg --configure -a
+mkdir -p ~/.docker/cli-plugins/
+curl -SL https://github.com/docker/compose/releases/download/v2.18.1/docker-compose-linux-x86_64 -o ~/.docker/cli-plugins/docker-compose
+DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker} 
+mkdir -p $DOCKER_CONFIG/cli-plugins 
+curl -SL https://github.com/docker/compose/releases/download/v2.18.1/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
+sudo mkdir /usr/local/lib/docker
+sudo cp -r ~/.docker/* /usr/local/lib/docker/ 
+# Executable permissions to the binary only for user
+sudo chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
+chmod +x ~/.docker/cli-plugins/docker-compose
+# Install Compose for all users
+sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+docker compose version
+
+
+------------------------------
+Q => SOLVE DISTRIB CONFLICT -- OK
+------------------------------
+sudo dpkg --configure -a
+sudo apt-get clean && sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get dist-upgrade
+sudo apt update
+sudo apt full-upgrade
+sudo apt-get autoremove
+sudo aptitude install libssl-dev zliblg-dev=1:1.2.8.dfsg-1ubuntu1
+sudo reboot
+# after restarting my pc and reparing broken packages
+sudo apt-get install -f
+sudo apt autoclean
+sudo apt clean
+sudo apt-get install idle
+sudo apt --fix-broken install
+apt-mark showhold
+
+
+--------------------------------------------
+Q => INSTALL NODEJS v18.17.1 (or 12.22.9) -- OK
+--------------------------------------------
+sudo dpkg --configure -a
+sudo apt-get update && sudo apt-get upgrade
+sudo apt install aptitude
+sudo apt install build-essential
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+nvm use system
+npm uninstall -g a_module
+# exit VM (close the terminal)
+# reconnect VM (in a new terminal)
+"
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+"
+source ~/.bashrc 
+source ~/.profile
+nvm install v18.17.1
+node -v
+
+
+--------------------------
+R => INSTALL NPM 10.2.0 -- OK
+--------------------------
+npm config set prefix ~/.npm-global
+npm install -g @angular/cli 
+npm install -g npm@10.2.0
+node -v
+npm -v
+
+
+---------------------------
+S => INSTALL JAVA 17.0.8 -- OK
+---------------------------
+sudo apt-get update && sudo apt-get upgrade
+dpkg --list | grep java
+sudo apt list --installed | grep java
+apt-cache search java-17
+sudo update-alternatives --config java
+sudo apt install openjdk-17-jdk
+which java
+java --version
+
+
+---------------------------
+T => INSTALL MAVEN 3.9.4 -- OK
+---------------------------
+sudo apt-get update && sudo apt-get upgrade
+dpkg --list | grep mvn
+dpkg --list | grep maven
+apt-cache search maven
+sudo wget https://dlcdn.apache.org/maven/maven-3/3.9.4/binaries/apache-maven-3.9.4-bin.tar.gz -P /opt
+ls /opt/
+sudo tar -xvzf /opt/apache-maven-3.9.4-bin.tar.gz -C /opt/
+ls /opt/
+sudo ln -s /opt/apache-maven-3.9.4 /opt/mvn
+ls /opt/
+
+
+--------------------------------------------------------------
+U => SET ENVIRONMENT VARIABLES FOR JAVA_HOME AND MAVEN_HOME -- OK
+--------------------------------------------------------------
+ls /usr/lib/jvm/java-1.17.0-openjdk-amd64
+JAVA_HOME=/usr/lib/jvm/java-1.17.0-openjdk-amd64
+ls /opt/mvn/
+ls /opt/mvn/bin/
+M2_HOME=/opt/mvn
+M2=/opt/mvn/bin
+MAVEN_HOME=/opt/mvn
+
+sudo nano /etc/profile.d/maven.sh
+# --> Add the following lines
+"
+# Environment variables
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+export M2_HOME=/opt/mvn
+export M2=/opt/mvn/bin
+export MAVEN_HOME=/opt/mvn
+
+# User specific environment and startup programsp
+export PATH=${M2_HOME}/bin:${PATH}:
+export PATH=$PATH:$HOME:/bin:$JAVA_HOME:$M2_HOME:$M2
+export PATH
+"
+sudo chmod +x /etc/profile.d/maven.sh
+echo $PATH
+source /etc/profile.d/maven.sh
+ls
+echo $PATH
+java --version
+mvn --version
+ls /opt
+sudo rm -rf /opt/apache-maven-3.9.4-bin.tar.gz
+sudo apt-get update && sudo apt-get upgrade
+
+--------------------------------------------------------
+V => ACIVATE TOOLS AND CLEAN ENVIRONMENT VERIFYCATION -- OK
+--------------------------------------------------------
+pwd && cd
+
+ 
+docker container kill oken-cars-web-apache
+docker container kill oken-cars-web-angular
+docker container kill oken-cars-web-spring
+docker container kill postgres:13
+docker image rm -f oken-cars-web-apache:latest
+docker image rm -f oken-cars-web-angular:latest
+docker image rm -f oken-cars-web-spring:latest
+docker image rm -f postgres:13
+docker ps
+docker images
+docker volume ls
+ls -lt
+sudo rm -r oken-cars-web/
+
+
+--------------------------------------------------
+W => PFSENSE --> DNS RESOLVER --> HOST OVERRIDE -- OK
+--------------------------------------------------
+# Connect to pfsense
+# Go to "Services"
+# Click on "DNS Resolver"
+# Scroll down to section "Host Override"
+# Click on "Add"
+# Enter an Host name
+oken-cars |OR| oken-cars2 |OR| oken-cars3 |OR| oken-cars4
+# Enter the Parent Domain of Host
+oken.lan
+#  Enter the IP address return for HOST
+oken-cars |OR| oken-cars2 |OR| oken-cars3 |OR| oken-cars4
+# Enter a description
+Oken Cars Application Server 1 -- oken-cars-01-ubuntu-server-22.04
+|OR|
+Oken Cars Application Server 2 -- oken-cars-02-ubuntu-server-22.04
+|OR|
+Oken Cars Application Server 3 -- oken-cars-03-ubuntu-server-22.04
+|OR|
+Oken Cars Application Server 4 -- oken-cars-04-ubuntu-server-22.04
+
+
+=============================================================
+=============================================================
+
+------------------------------------------------------------
+Y => ON DEPLOYMENT SERVERS -- REMOTE COMMAND FROM JENKINS --
+------------------------------------------------------------
+-------------------------------------
+Y' => BUILD STAGE FOR JENKINS FILE -- EN COURS
+-------------------------------------
+# 1) Check Network & internet access')   OK
+ip -4 a | grep ens18
+nslookup server oken-cars.oken.lan
+ping -c2 oken-cars.oken.lan
+ping -c2 8.8.8.8
+
+# 2) stage('Clone the project') ICI
+ls -lt
+git clone --branch develop --single-branch ssh://git@10.10.10.212:2222/oken-consulting/oken-cars-web.git
+cd oken-cars-web/
+git checkout develop
+
+# 3) stage('Generate Artefact')
+ls -lt
+cd spring/ && mvn clean install -DskipTests
+
+# 4) stage('INSTALL ANGULAR CLI')
+cd && cd oken-cars-web/angular/ && sudo npm install -g @angular/cli && sudo npm install
+
+# 5) stage('INSTALL ANG.CLI APP Version and Execute App')
+cd && cd oken-cars-web/angular/ && sudo npm install -g @angular/cli@16.2.1 && sudo ng version && sudo ng serve
+
+# 6) stage('Build Oken Cars APP')
+cd && cd oken-cars-web/ && docker compose up -d
+
+			
+----------------------------------------------
+++++ !! => CONCLUSION PREMIERE PHASE ++++ !! |
+++++ !! => METHODE 100% MANUELLE     ++++ !! |
+----------------------------------------------
+oken@dockerserver:~/oken-cars-web$  => => naming to docker.io/library/oken-cars-web-apache        0.0s
+[+] Running 5/5
+ ✔ Network oken-cars-web_mynet  Created                        0.3s
+ ✔ Container db_host            Started                        5.2s
+ ✔ Container spring-app         Star...                        5.3s
+ ✔ Container angular-app        Sta...                         7.2s
+ ✔ Container apache-app         Star...                        8.3s
+

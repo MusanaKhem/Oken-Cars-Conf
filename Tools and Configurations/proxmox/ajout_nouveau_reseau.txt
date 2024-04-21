@@ -1,0 +1,55 @@
+---------------------------------------------------------------------------------------
+------------------------------ AJOUT D'UN NOUVEAU RESEAU ------------------------------
+---------------------------------------------------------------------------------------
+
+
+Ajouter un nouveau réseau permet de créer distinguer des réseaux, lutter contre les attaques
+donner des tâches spécifiques à certains réseaux, répartir la charge de travail, 
+lutter contre les pertes de données grâce au découpage du réseau, 
+apporter de la clareté et de la lisibilité dans le travail de l'ADMIN SYS, 
+mais aussi de la lisibilité dans l'architecture informatique de l'entreprise... par exemples.
+
+
+C'est ainsi qu'il faut respecter un certain nombre d'étapes pour effectuer cette tâche
+de façon fluide.
+
+----------
+Etape 1 : Dans votre hyperviseur (dans notre cas Proxmox), 
+----------  * cliquez sur l'icône du serveur concerné,
+            * cliquez sur 'Network', 
+            * cliquez sur 'Create', 
+            * cliquez sur 'Add a Linux Bridge, 
+            * nommez votre nouveau bridge, 
+            * ajoutez une description pour mieux vous éviter les confusions, 
+
+----------
+Etape 2 : Ajouter une carte réseau
+----------  * cliquez sur la VM 101 (pfSense...), 
+            * cliquez sur l'inglet 'Hardware',
+            * cliquez sur 'ADD' et 
+            * cliquez sur 'Network Device' 
+pour ajouter un périphérique de type carte réseau à votre machine
+
+----------
+Etape 3 : Rendez vous sur l'interface web de pfSense
+----------  * Cliquez sur 'Interfaces'
+            * Cliquez sur 'Assignements'
+            * Dans cette partie, vous pouvez sélectionnez et associer les ports réseaux avec l'interface
+            * Cliquez sur 'Interfaces' et sélectionnez la carte à modifier
+            * Cochez la case vide pour Autoriser l'utilisation de l'interface
+            * Apportez les modifications nécessaires (Description)
+            * Indiquez IPv4 'Static IPv4' ce qui permet d'indiquer l'adresse IP
+            * Indiquez l'adresse IP et le masque
+            * Cochez les deux cases du bas pour bloquer les trafics non autorisés par défaut
+            * Cliquez sur 'Save' pour sauvegarder
+
+----------
+Etape 4 : Appliquez et validez les modifications
+----------  * Cliquez sur "Apply Changes"
+            * Si tout est correct, un message sur fond vert apparaît
+
+----------
+Etape 5 : On peut vérifier la prise en charge par 3 moyens
+----------  * On peut consulter les Assignements des interfaces
+            * On peut consulter le dashboard et observer la liste des réseau qui sont reconnus par le firewall
+            * On peut consulter la console de pfSense pour voir si les mêmes indications s'affichent correctement

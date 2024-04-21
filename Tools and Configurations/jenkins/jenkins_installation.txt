@@ -1,0 +1,41 @@
+---------------------------------------------------------------|
+---------------------------------------------------------------|
+-- +++ JENKINS VARIABLES FOR SHELL AND BATCH BUILD STEPS +++ --|
+---------------------------------------------------------------|
+---------------------------------------------------------------|
+
+
+--------------------------------------------------------------------------------
+                                 INTRODUCTION
+--------------------------------------------------------------------------------
+
+Jebkins c'est quoi ? --> un ordonnanceur qui fait tourner des tâches ("jobs") de façon structurée / organisée / planifiée
+
+Grâce à Jenkins, il est possible de mettre en place une chaîne d'intégration continue (pipeline CI/CD)
+- phase de build (pour créer l'application / l'élément binaire...)
+- phase de run
+- phase de test (pour vérifier si tout s'est bien passé)
+
+Dans l'univers DevOps, JENKINS est utilisé comme Gitlab CI / Run Deck.
+
+
+--------------------
+UTILISATION
+--------------------
+- j'ai utilisé la ligne de commande pour l'installation de Jenkins
+- j'ai utilisé l'interface graphique pour la configuration de la pipeline CI/CD
+- j'ai utilisé Jenkins via l'interface graphique : sur le port 8080 par défaut
+
+
+-------------------------
+CAS DE MON INSTALLATION -
+-------------------------
+
+Mon Choix : Installation par paquet
+--> https://pkg.jenkins.io/debian-stable
+
+Méthode de configuration
+--> documentation : 
+--> rédaction de
+
+

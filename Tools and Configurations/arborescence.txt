@@ -1,0 +1,111 @@
+.
+├── apache
+│   └── oken-cars-apache-oken-cars.conf
+├── arborescence.txt
+├── build_app
+│   ├── download_and_build-oken_cars-app.sh
+│   ├── oken-cars-build.sh
+│   ├── oken-cars-delete-and-rebuild.sh
+│   └── test_build-on_server-from_repository.sh
+├── docker
+│   ├── install_docker_24.0.6.sh
+│   ├── install_docker_compose.sh
+│   └── install_docker.sh
+├── .git
+│   ├── config
+│   ├── description
+│   ├── HEAD
+│   ├── hooks
+│   │   ├── applypatch-msg.sample
+│   │   ├── commit-msg.sample
+│   │   ├── fsmonitor-watchman.sample
+│   │   ├── post-update.sample
+│   │   ├── pre-applypatch.sample
+│   │   ├── pre-commit.sample
+│   │   ├── pre-merge-commit.sample
+│   │   ├── prepare-commit-msg.sample
+│   │   ├── pre-push.sample
+│   │   ├── pre-rebase.sample
+│   │   ├── pre-receive.sample
+│   │   ├── push-to-checkout.sample
+│   │   ├── sendemail-validate.sample
+│   │   └── update.sample
+│   ├── index
+│   ├── info
+│   │   └── exclude
+│   ├── logs
+│   │   ├── HEAD
+│   │   └── refs
+│   │       ├── heads
+│   │       │   └── main
+│   │       └── remotes
+│   │           └── origin
+│   │               └── HEAD
+│   ├── objects
+│   │   ├── info
+│   │   └── pack
+│   │       ├── pack-5cc558083f2409ed2b88b5431196879e351f4c6d.idx
+│   │       ├── pack-5cc558083f2409ed2b88b5431196879e351f4c6d.pack
+│   │       └── pack-5cc558083f2409ed2b88b5431196879e351f4c6d.rev
+│   ├── packed-refs
+│   └── refs
+│       ├── heads
+│       │   └── main
+│       ├── remotes
+│       │   └── origin
+│       │       └── HEAD
+│       └── tags
+├── git
+│   └── install_git.sh
+├── gitlab
+│   ├── fetch_app-on_server-from_repository.sh
+│   └── local_manage_branches-after_gitlab_migration.sh
+├── gitlab-ci.yml-bad-version
+├── java
+│   ├── install_java.sh
+│   └── install_jdk17.sh
+├── jenkins
+│   ├── jenkinsfile.groovy
+│   ├── jenkins_installation.txt
+│   ├── jenkins_plugins.txt
+│   ├── Jenkins-System_Config-SonarQube.txt
+│   └── jenkins-vars.txt
+├── maven
+│   ├── install_maven-3.9.4.sh
+│   ├── install_simple_maven-3.9.4.sh
+│   ├── maven_export_vars.bash
+│   └── uninstall_and_install_maven.sh
+├── node
+│   └── install_node.sh
+├── pfsense
+│   ├── dns_and_vpn_ip_sec.txt
+│   ├── open_vpn
+│   │   └── open_vpn.txt
+│   ├── pfsense_add_host_overides.txt
+│   ├── README_vpn_ip_sec.md
+│   └── vpn_site_to_site.txt
+├── project_tutorials
+│   ├── oken-tasks.txt
+│   ├── sonarqube_setup_and_config.txt
+│   └── virtual_machines_configuration.txt
+├── proxmox
+│   └── ajout_nouveau_reseau.txt
+├── README.md
+├── sonarqube
+│   ├── sonar_infos.txt
+│   ├── sonar-project-server1.properties
+│   ├── sonar-project-server2.properties
+│   └── sonar-project-server3.properties
+├── system
+│   ├── add_user.sh
+│   ├── change_hostname.sh
+│   ├── typical_vm_setup.txt
+│   ├── verify_tools.sh
+│   └── vm_templates-config.txt
+├── ufw
+│   └── install_and_set_ufw_firewall.sh
+└── vagrant
+    ├── auto-deploy-vm-git-java-mvn-docker.sh
+    └── okcw_01_template_proxmox.sh
+
+34 directories, 75 files

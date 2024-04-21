@@ -1,0 +1,57 @@
+---------------------------------------------------------------------------------------
+-------------------------------- CREATION D'UN VPN ------------------------------------
+---------------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------
+1) Section/Chemin : /System/Certificate Manager/ Certificates 
+--------------------------------------------------------------
+--> affiche l'ensemble des certificats existants/créés
+
+--------------------------------------------------------------
+2) Section/Chemin : /System/Certificate Manager/CAs
+--------------------------------------------------------------
+--> affiche les autorités de certifications : 
+- Quand je créé un nouveau certificat c'est la première étape 
+- Chaque autorités de certification peut être éditée, exportée, la clé du CA peut aussi être exporté (mais pour l'instant ce n'est pas ce qui m'est demandé)
+- l'autorité de certification une entité (un programme) qui va sécurisé la communication.
+- elle délivre des certificats entre pour chaque machine 
+* machine qui demande la communication/le message/le contenu/l'entrée dans le tunnel) ; machine qui reçoit la communication
+* une machine/un client/un demandeur qui souhaite se connecter et rentrer dans la communication doit se voir délivrer un certificat 
+* elle sert de filtre 
+* d'intuition et par rapport à ce que tu m'expliquais lors des deux dernières réunions, d'où l'importance des règles, à qui accorde-t-on le droit d'accès pour communiquer)
+
+-------------------------------------------------------------
+3) Section/Chemin : /VPN/OpenVPN/Servers 
+-------------------------------------------------------------
+--> affiche c'est le certificat pour le tunnel que je viens de créer 
+entre le firewall et la machine (celui que j'ai testé hier apparaissait )
+- Affiche le certificat lié au serveur lui même et dans un contexte donné 
+- en lien direct avec le tunnel qui est créé
+- à mon niveau un tunnel est composé de deux entités pouvant être tous deux demandeur et receveur
+- dans notre cas, je crée le tunnel entre le firewall (pfSense) et le réseau de travail de Prod (Windows Server 2019)
+- le firewall (pfSense) est considéré comme le "Local Network" dans les paramètres de configuration
+- pour déterminer le tunnel j'ai besoin des points d'accès donc des adresses IP
+- le "Tunnel Network" nécessite que j'indique l'adresse IP de la machine Windows Server 2019
+
+
+------------------------------------------------------------
+CONCLUSION AVANT LA CREATION DES REGLES
+------------------------------------------------------------
+- avant la création du tunnel, il n'y a pas de canal de communication sécurisé
+- les machines (le firewall et Windows Server) peuvent communiquer mais les communications peuvent être espionné car les réquêtes par exemples sont visibles)
+- si les requêtes et d'autres informations sont visibles cela est considéré comme une faille de sécurité, une menace potentielle
+- en créant le tunnel, je crée un canal de communication 
+- (intuition) en définissant des règles, je détermine des droits d'accès, des conditions préalables
+- (intuition) créer un tunnel et définir des règles permet de mettre en place des gardes fous afin de se prémunir des intrusions
+
+------------------------------------------------------------
+FORMULE INTUITIVE POUR VULGARISER LA COMPREHENSION
+------------------------------------------------------------
+--> Les autorités de certification 
++ les certificats qui y sont rattachés 
++ les règles du WAN (accès au serveur) 
++ les règles du LAN (accès au réseau local)
++ les règles OpenVPN (accès aux tunnels)
+= Permettre de créer / Configurer / Paramétrer / Manager / Distinguer / Organiser la sécurité des échanges entre les machines/réseaux
+

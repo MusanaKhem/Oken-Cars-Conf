@@ -1,0 +1,137 @@
+---------------------------------------------------------------------------------------
+-------------------------------- CONFIGURATION DU DNS ---------------------------------
+---------------------------------------------------------------------------------------
+
+------------
+Prérequis 
+------------
+| - Disposer de 2 serveurs distincts
+| - Disposer d'une interface WAN distincte et active pour chacun des serveurs
+| - Disposer d'une interface LAN distincte et active pour chacun des serveurs 
+| - Désactiver le service /DHCPv6 Server concernant le LAN
+| - Désactiver le service /Router Advertisements/ concernant le LAN
+
+-----------
+Etape 1 : Informations sur les différents(2) réseaux à lier
+|---------- * Serveur 1 -> "54.38.46.164"
+|	    * WAN     1 -> "87.98.163.132/32" 
+|	    * pfSense 1 -> "pfSenseFirewall.oken.local"
+|	    * LAN     1 -> "192.168.1.1/24"
+|           * Local Ntw -> "172.20.1.0/24"
+|	    * VM LAN  1 -> "192.168.1.102"	
+|	    * GW LAN  1 -> "192.168.1.245"
+|	    * PREPROD 1 -> "182.100.1.1/24"
+|           * PROD    1 -> "172.100.1.1/24"
+
+|	    * Serveur 2 -> "51.15.21.218"
+|	    * WAN     2 -> "212.83.132.250/32"
+|	    * pfSense 2 -> ""
+|	    * LAN     2 -> "10.10.1.1/24" ou "10.10.1.0/24"
+|           * Local Ntw -> "172.30.1.0/24"
+|	    * VM LAN  2 -> "10.10.1.???"
+|           * GW LAN  2 -> "10.10.1.254" ou "10.10.1.245"
+|           * PREPROD 2 -> "172.16.100.254/24"
+|           * PROD    2 -> "192.168.100.254/24"
+
+----------
+Etape 2 : Création d'un VPN IPsec
+----------
+|            * chemin : VPN -> IPsec -> Tunnels -> Add (Edit Phase 1)
+|---STEP1--- * Description           -> VPN LAN1 on pfSense1 to LAN1 on pfSense2(step1)
+|            * Key exchange version  -> IKEv2
+|            * Internet Protocol     -> IPv4
+|            * Interface             -> WAN
+|            * Remote Gateway        -> 212.83.132.250
+|            * Authentication Method -> Mutual PSK
+|            * My Identifier         -> My IP address
+|            * Peer identifier       -> Peer IP address
+|            * Pre-shared Key        -> 005df90a79079a7ad8b329fb2c4af18c6209a1b9afa616d6b0742384
+|---STEP2--- * Encryption Algorithm  -> AES256-GSM ; 128 bits ; SHA512 ; 14 (2048 bit)
+|---PHASE1--                            Algorithm  ; Keylength; Hash   ; DH Group
+|---STEP2--- * Description           -> VPN LAN1 on pfSense1 to LAN1 on pfSense2(step2)
+|---PHASE1-- * Mode                  -> Tunnel IPv4
+|            * Local Network         -> "Network" ; "172.20.1.0" ; "/24"
+|            * Remote Network        -> "Network" ; "172.30.1.0" ; "/24"
+|            * Encryption Algorithm  -> "AES256-GSM" ; "128 bits"
+|            * Hash Algorithm        -> "SHA512"  (cochée automatiquement)
+|            * PFS key group         -> 14(2048 bit)
+|-Expiration-* Life Time             -> 79200
+|            * Rekey Time            -> 72000
+|            * Reauth Time           -> 0 (default)
+|-Ad.Options-* Dead Peer Detection   -> 7200 (default)
+|---STEP2----* Frewall / Rules / LAN (gestion et crétio
+|            * Rand Time             -> 
+|            * Rand Time             -> 
+ 
+-----------
+Etape 3 : Il faut créer des régles flotantes (floating) de firewall entre le WAN 1 et le WAN 2
+-----------
+
+-----------
+Etape 4 : Il faut créer des régles de firewall dans le réseau LAN
+|----------  * entre l'interface du réseau local et l'interface du réseau de développement (LAN net et DEV net)
+|            * entre l'interface du réseau local et le réseau de développement1 (LAN net et 172.20.1.0/24)
+|            * entre l'interface du réseau local et le réseau de développement2 (LAN net et 172.30.1.0/24)
+
+-----------
+Etape 5 : Il faut créer des régles de firewall dans le réseau DEV
+|----------  * entre l'interface du réseau de développement1 et l'interface du réseau local (DEV net et LAN net)
+|            * entre l'interface du réseau de développement1 et le réseau de développement1 (DEV net et 172.20.1.0/24)
+|            * entre l'interface du réseau de développement1 et le réseau de développement2 (DEV net et 172.30.1.0/24)
+
+-----------
+Etape 6 : Il faut créer des régles de firewall dans le tunnel VPN IPsec
+|----------  * entre le WAN 1 et le WAN 2 (87.98.163.132 et 212.83.132.250)
+|            * entre le réseau de développement1 et l'interface du réseau de développement1 (172.20.1.0/24 et DEV net)
+|            * entre le réseau de développement2 et l'interface du réseau de développement1 (172.30.1.0/24 et DEV net)
+|            * entre le réseau de développement1 et l'interface du réseau local (172.20.1.0/24 et LAN net)
+|            * entre le réseau de développement2 et l'interface du réseau local (172.30.1.0/24 et LAN net)
+
+----------------------------------------------------------------------------
+----------->>>>> INDICATIONS UTILES -- ELEMENTS A CONSULTER <<<<<-----------
+----------------------------------------------------------------------------
+Les mêmes démarches, mais en inversant les configurations sont à faire 
+via l'interface web du pfSense2 (de l'autre réseau)
+
+Ensuite il convient de vérifier le statuts des services 
+-> clic sur "Status"
+-> clic sur "Services"
+
+Si les configurations sont correctes :
+-> le service "ipsec" et la description associée "IPsec VPN" sont sur une même ligne dans la liste
+-> le service doit être lancé/disponible et l'indicateur est de couleur verte
+----------------------------------------------------------------------------
+
+-----------
+Etape 7 : Autoriser le VPN IPsec
+|----------  * clic sur "VPN"
+|            * clic sur "IPsec"
+|            * lorsque le VPN IPsec n'est pas autorisé, un bouton orange "ENBALE" apparaît
+|            * cliquer sur ce bouton en début de ligne pour autoriser le VPN IPsec
+|            * normalement si tout est correctement fait, le bouton devient vert
+|            * cliquer sur "Apply Changes" pour appliquer et prendre en compte les modifications
+|            * un bandeau de confirmation vert apparaît si tout est en ordre
+
+-----------
+Etape 8 : Réglages des paramètres avancés pour configurer la gestion des logs
+|----------  * clic sur "VPN"
+|            * clic sur "IPsec"
+|            * clic sur "Advanced Settings"
+|            * Pour tous les paramètres qui ne sont pas listés ici, veuillez laisser par défaut
+|            * IKE SA                    -> Diag
+|            * IKE Child SA              -> Diag
+|            * Configuration backend     -> Diag
+|            * Sauf indications professionnelles contraires, laissez les autres paramètres par défaut
+|            * Auto-exclude LAN address  -> cochez la case si ce n'est pas fait
+|            * Cliquez sur "Save" / "Sauvegarder" pour valider les modifications
+
+-----------
+Etape 9 : Monter le VPN IPsec (faire la manip sur chacune des interfaces web pfSense1 et pfSense2)
+|----------  * clic sur "Status"
+|            * clic sur "IPsec"
+|            * cliquer sur le bouton vert pour établir la connexion
+
+-----------
+Etape 10 : Vérifier les logs et vérifier si la connexion est bien établie
+|---------- 
+

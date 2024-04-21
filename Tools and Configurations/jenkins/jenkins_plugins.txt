@@ -1,0 +1,33 @@
+# jenkins_plugins.txt
+
+--------------------------------------------------------
+-- Plugin à Télécharger et à installer depuis Jenkins --
+--------------------------------------------------------
+	-> Build Pipeline Plugin
+	-> Credentials Binding Plugin
+	-> Credentials Plugin
+	-> Blue Ocean
+	-> Dashboard for Blue Ocen
+	-> Dashboard View
+	-> Delivery Pipeline Plugin
+	-> Docker Compose Build Step Plugin
+	-> Docker Pipeline
+	-> Docker Plugin
+	-> Generic Webhook Trigger Plugin
+	-> Git Pipeline for Blue Ocean
+	-> Git Server Plugin
+	-> GitLab Authentication plugin
+	-> GitLab Credentials - Kubernetes Integration
+	-> GitLab Plugin
+	-> Kubernetes Credentials Plugin
+	-> Maven Integration plugin
+	-> Maven Invoker plugin
+	-> Multibranch Scan Webhook Trigger
+	-> Pipeline Maven Integration Plugin
+	-> Pipeline: GitHub Groovy Libraries
+	-> Publish Over SSH
+	-> SonarQube Scanner for Jenkins
+	-> SSH Agent Plugin
+	-> SSH Pipeline Steps
+	-> SSH plugin
+	-> SSH2 Easy Plugin (SonarQube)

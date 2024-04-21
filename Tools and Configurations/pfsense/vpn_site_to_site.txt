@@ -1,0 +1,186 @@
+-----------------------------------------------------------------------
+----------------- LA CONFIGURTION DU VPN (client-to-site) ---------------
+-----------------------------------------------------------------------
+
+
+Si la configuration n'est pas correcte (un ou plusieurs paramètres indiqués ou non indiqués)
+alors la connexion VPN client-to-site ne s'effectue pas.
+
+Dans ce cas on peut constater :
+- on peut constater l'état du "Réseau et Internet" en consultant l'état des "Connexions réseau"
+- un message d'erreur de l'interface graphique d'installation du client sur l'hôte
+- les messages d'erreur lors du processus d'installation du VPN sur l'hôte (cf. message d'erreur pour débugger)
+- le status du service OpenVPN dans pfSense qui indique que le service n'a pas démarré (couleur de l'icône : rouge au lieu de verte)
+
+Afin de revoir certains éléments de base de la configuration du VPN (serveur-hôte) via OpenVPN, il faut :
+--> retourner dans l'interface web pfSense
+--> cliquez sur les onglets suivant et successivement
+     * 
+     * 
+
+---------------------------------------------------------------------
+------> CAS DU SERVEUR PROXMOX -- Node-pve2 -- 57.128.118.238 <------
+---------------------------------------------------------------------
+
+--> OpenVPN -- Wizard -- OpenVPN Remote Access Server Setup -- Add Certificate Authority
+--> Authority Certificate - web configurator
+1) Description name : VPN_client_OVH_prox_pve2_srv2_cert_001
+
+2) Key length : 4096 bit
+
+3) Lifetime : 3650 days
+
+4) Country Code : FR
+
+5) State or Province : Hauts-de-France
+
+6) City : Lille
+
+7) Organisation : Oken Consulting
+
+
+--> Server Certificate - 
+
+8) Description name : ServerCertificateNode2Pve2Srv2
+
+9) Key Length : 4096 bit
+
+10) Lifetime : 398 days
+
+11) Country Code : FR
+
+12) State or Province : Hauts-de-France
+
+13) City : Lille
+
+14) Organisation : Oken Consulting
+
+
+--> Mode Configuration
+Server mode : Remote Access (SSL/TLS + User Auth)
+
+
+--> General OpenVPN Server Information
+
+15) Interface : WAN
+
+16) Protocol : UDP on IPv4 only
+
+17) Local Port : 15020
+
+18) Description : Remote Oken Team Services node-pve2 srv2
+
+
+--> Cryptographic Settings
+
+19) TLS Authentication : checked
+
+20) Generate TLS Key : checked
+
+21) TLS Shared Key  : masked
+
+22) DH Parameters Length : 4906 bit
+
+23) Data Encryption Negotiation : checked
+
+24) Data Encryption Algorithms : AES-256-GCM + AES-128-GCM + CHCACHA20-POLY1305
+
+25) Fallback Data Encryption Algorithm : AES-256-CBC (256 bit key, 128 bit block)
+
+26) Auth Digest Algorithm : SHA256 (256-bit)
+
+27) Hardware Crypto : No Hardware Crypto Acceleration
+
+
+--> Tunnel Settings
+
+28) Tunnel Network : 10.40.20.0/24
+
+29) Redirect Gateway : unchecked
+
+30) Local Network : 10.1.100.20/24
+
+31) Concurrent Connections : 5
+
+32) Allow Compression : Refuse any non-sub compression (Most secure)
+
+33) Compression : Disable Compression [Omit Preference]
+
+34) Type-of-Service : unchecked
+
+35) Inter-Client Communication : unchecked
+
+36) Duplicate Connections : unchecked
+
+
+--> Client Settings
+
+37) Dynamic IP : checked
+
+38) Topology : Subnet - One IP address per client in a common subnet
+
+39) DNS Default Domain : oken.local
+
+40) DNS Server 1 : empty
+
+41) DNS Server 2 : empty
+
+42) DNS Server 3 : empty
+
+43) DNS Server 4 : empty
+
+44) NTP Server : empty
+
+45) NTP Server 2 : empty
+
+46) NetBIOS Options : unchecked
+
+47) NetBIOS Node Type : none
+
+48) NetBIOS Scope ID : empty
+
+49) WNS Server 1 : empty
+
+50) WNS Server 2 : empty
+
+
+
+--> Remote Access Firewall and OpenVPN rules
+
+51) Firewall Rules : checked
+
+52) OpenVPN Rules : checked
+
+
+--> Finished
+53) Click on the "Finish" blue button
+
+--> Modify the OpenVPN server configuration
+54) Description : Remote Oken Team and Service prox node-pve2 srv2
+
+
+--> Advanced Configuration
+55) Custom options (add the lines bellow) :
+persist-key
+persist-tun
+remote-cert-tls server
+reneg-sec 0
+auth-retry interagir
+auth-nocache
+push "route 10.1.100.20 255.255.255.0"
+
+56) Création d'un user avec droit admin
+hmatondo - mdp : oken242!!
+
+57) Mise à jour du pfsense pour pouvoir installer le packet de gestion des clients openvpn
+
+58) Création d'un user avec droit admin
+wengandja - mdp : oken242!!
+
+59) Installation de 'packet manager' : 'openvpn'
+
+
+--> Ajout d'un règle dans le LAN
+
+60) Autoriser les protocoles TCP/UDP depuis n'importe quelle machine, à travers le VPN, vers les adresses du LAN
+

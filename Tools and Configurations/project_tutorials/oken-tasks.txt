@@ -1,0 +1,611 @@
+------------------------------------------------------------------------------------
+--0)-- TACHES A FAIRE ----  ---------------------------------------------------------
+------------------------------------------------------------------------------------
+AF 1- Mettre à jour JENKINS                             A FAIRE
+|  2- Backup config                                        OK
+------------------------------------------------------------------------------------
+--1)-- TACHES INFRA OVH ----  -------------------------------------------------------
+------------------------------------------------------------------------------------
+|  1- Mettre à jour ATLASSIANS                              OK
+|  2- Renseigner les tickets JIRA                           OK
+------------------------------------------------------------------------------------
+----------->>>> ANCIEN KEEPASS A VERIF AVANT DE SUPPRIMER <<<<----------------------
+------------------------------------------------------------------------------------
+| -> Title : UserManager
+| -> User  : Willem
+| -> Mdp   : Gam$Di85!Neh#\
+------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------
+------------------>>>>>>>>> ACCES AUX SCHEMAS <<<<<<<<<<----------------------------
+https://okenconsulting-my.sharepoint.com/:u:/r/personal/hmatondo_okenconsulting_onmicrosoft_com/_layouts/15/Doc.aspx?sourcedoc=%7B11eba584-1234-486a-bfcc-ca4e0a6a8209%7D&action=edit&or=PrevEdit
+------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------
+--2)-- REINSTALLATION ----  ---------------------------------------------------------
+------------------------------------------------------------------------------------
+| -UR-----> OS Hyperviseur Proxmox ----> 
+| * nom serveur : 'ox-proc253' ||devient|| 'ox-proc254'   OK
+| * nom admin : 'root'                                    OK
+| * Ipv4 : '54.38.46.164'  ||devient|| 'ox-proc254'       OK
+| * port : '9929'                                         OK
+| -UR---> Authentification Double Facture                 OK
+| -UR---> Config ssh - mdp none -juste clé ssh            OK
+| * connxion ssh ok (powershell)                          OK
+| * fichier fail2ban créé                                 OK
+|* mot de passe changé --> Eskgns*stHjp$oERey*            OK
+| --->>> Ajout clé ssh pour Willem		                  OK
+| --> Mremote (cle ssh)                                   OK
+
+
+------------------------------------------------------------------------------------
+-- 3) --->>> INFRASTRUCTURE -- A AMELIORER ET CORRIGER LES INCOHERENCES ------------
+------------------------------------------------------------------------------------
+| -> Réinstall des OS clients                             OK
+| -> Réseau / pfSense / Firewall                          OK 
+| -> LAN                                                  OK
+| -> Ubuntu                                               OK 
+| -> VM ubuntu communique avec pfSense                    OK
+| -> mdp pfSense interface web changé, disponible Keepass, et fonctionnel OK
+| -> configuration interfaces WAN                         OK
+| -> configuration routing / gateway                      OK 
+|  * gateway fonctionnel                                  OK
+|  * ping(s) réussis                                      OK
+|  * accès à Internet pour VM ubuntu                      OK
+| -> Création VM windows server (config / paramètres / installation / connexion) OK
+| -> Créeation VM windows 10 (config / paramètres / installation / connexion)    OK
+
+
+------------------------------------------------------------------------------------
+--4)-- VPN CLIENT TO SITE -----------------------------------------------------------
+------------------------------------------------------------------------------------
+OBJ * Faire communiquer LAN 1 avec LAN 2 (Local Network avec OPENVPN network)
+DOC * https://notamax.be/pfsense-vpn-client-a-site/
+DOC * https://www.youtube.com/watch?v=iSbxmyABcbw
+DOC * https://neptunet.fr/openvpn-pfsense/
+
+| --->>> Faire un VPN   	                            TOUT OK
+| -> Connexion pfSense interface web
+| - VPN --> Open VPN
+| - Server Certificate Manager
+| -> Création des 2 premiers certificats
+| - Certificate Authority Selection
+| - Create a New Certificate Authority (CA) Certificate
+|    OPTION* Certificat 1 Firewall "pfsense_CA_001" valable 8 ans ; FR ; NORD ; Lille ; Oken Consulting FR
+| - Server Certificate Selection - Create a New Server Certificate
+|    OPTION* Certificat 2 Serveur "VPN-Serv-Cert-001" valable 5 ans ; FR ; NORD ; Lille ; Oken Consulting FR
+| -> Configuration Serveur -> Configuration entre le WAN et le VPN
+|    OPTION* Interface : WAN
+|    OPTION* Protocal : UDP on IPv4 only
+|    OPTION* Local Port : 12300 (1194 par défaut)
+|    OPTION* Description : VPN_SRV_nomade_access_001
+|    OPTION* TLS Auth. (y) + Generate TLS key (y) + DH Param. Length (2048 bit)
+|    OPTION* Data Encryption Negociation : Yes
+|    OPTION* Fallback Data Encryption Algorithm : AES-256-CBC (256 bit key, 128 bit block)
+|    OPTION* Auth Digest Algorithm : SHA256
+|    OPTION* Dynamic IP : Yes
+|    OPTION* Topology : Subnet -- One IP address per client in a common subnet
+| -> Tunnel Paramètres
+|    OPTION* Tunnel Network (IP Prod Network - OpenVPN TAP-Windows6) : 10.10.100.1/16
+|    OPTION* Local Network : IP LAN : 192.168.1.1/24
+|    OPTION* Allow Compression : Refuse any non-sub compression (Most secure)
+|    OPTION* Compression : Disable compression (Omit Preference)
+| --->>> VPN pfsense - client-to_site                             OK
+| -> /Firewall/Rules/WAN                                       FAIT AUTO
+| -> /Firewall/Rules/OpenVPN                                   FAIT AUTO
+| -> Génération des clients                                       OK
+|  	* Hermann                                                     OK
+| 	* Willem                                                      OK
+|	* Olympe                                                      OK
+| 	* Loic                                                        OK
+| -> Utilisation du client OpenVPN sous Windows10                 OK
+|	* ouverture des ports non comprise						      OK
+|	cf. docs Willem entre le 20 et 24 Mai 2023
+EC	* revoir principes/problématiques/protocoles réseaux        EN COURS
+EC 	* Cours informatique                                        EN COURS
+| (https://www.youtube.com/watch?v=_X_FY0s6JPY&list=PLh9CvVp9j2f99-e1di44iSP1X34kPwmAr)
+EC -> Utilisation du client OpenVPN sous Ubuntu 20.04           EN COURS
+AF -> Utilisation du client OpenVPN sous Android                 A FAIRE
+
+
+
+
+------------------------------------------------------------------------------------
+--->>> TACHES A 15 au 20 mai 2023 - OK ---------------------------------------------
+------------------------------------------------------------------------------------
+| -> Prévoir des backups vers le FTP           OK
+| SHA256:5Ms9epVxU9lZa+XedH7UwY/2z/zLSldqbr7rO7Fvqec hmatondo@oken-desk02
+
+
+------------------------------------------------------------------------------------
+1)--> Renommer les machines - OK ---------------------------------------------------
+------------------------------------------------------------------------------------
+|    * Pour donner un sens en fonction de l'architecture
+|    * Proposer une nomenclature
+|    * Glossary of Terms for acronym (list)
+|    	- VM = Virtual Machine
+|		- VPN = Virtual Private Network
+|		- Ubu20.04 = Ubuntu 20.04
+|		- FW = Firewall
+|		- BUS = Router
+|		- SRV = Server
+|	    - localsrv = Server local (srv redirection users other network)
+|		- LAN = Local Network
+|		- SM = Services Manager
+|		- SYSADM = Administrator System
+|		- Dep = Deployement
+|		- Dev = Development
+|		- Prod = Production			
+|		- CTL = Contrôle pour un Sys Admin
+|	* Nom + Type de l'OS + Type app. + Environnement + Fonctionnalité
+|		- VM 101 = pfSenseUbu20.04FW.BUS.SM                OK
+|		- VM 102 = VM.Ubu20.04.SYSADM.LAN1.local.CTL       OK
+-		- VM 104 = VM.Ubu20.04.Client.LAN1.local.Test      OK
+AF		- VM 105 = VM.W10.Client.LAN1.local.Test           OK
+|		- VM 110 = localsrv.Wsrv19ess.SRV.LAN2.Dep		   OK
+|		- VM 111 = VM.W10.Client.LAN2.local.Dev            OK
+
+
+---------------------------------------------------------------------------------------------------------------------------
+A FAIRE ------ 15 MAI 2023 ------------------------------------------------------------------------------------------------
+
+-> Machine Win server : avec AD dans le LAN1 ---->         OK
+-> Installer le service AD dans la VM        ---->         OK
+-> VERIFIER LES PING RESEAUX	             ---->         OK
+-> RENOMMER LA MACHINE DEPUIS LE SHELL       ---->         OK
+          * wprd-dc01.oken.local                           OK
+		  * "hostname"."domain"   
+-> RENOMMER AUTRES MACHINES                             A FAIRE
+		  * lprdweb01.oken.local
+		  * "hostname"."domain"
+		    + "alias"."domain"
+		  * ldevweb01.oken.local
+		  * lprdweb01.oken.local
+          * devprd-web01.oken.local
+-> AJOUTER UN ALIAS AUX MACHINES SI NECESSAIRE
+		  * devprd-docker01-web01.oken.local
+		  
+-> VPN client to site entre la VM Win server AD(de LAN1) et les users
+-> Installer Ansible AWX sur la VM correspondante (dans le LAN1)
+-> Depuis la VM Ansible AWX configurer l'installation de Gitlab via Docker-Compose sur la machine VM (Docker-GitLab)
+   * conf mail suite à un merge
+   * avec authentification (quand tout sera en place)
+-> Jenkins : l'installer dans un conteneur (dans la VM docker-gitlab)
+   * voir aussi la sauvegarde (conf. - avancement)
+   * 
+   * 
+
+
+------------------------------------------------------------------------------------
+8)--> ADRESSES IP A CONNAÎTRE - A FINIR --------------------------------------------
+------------------------------------------------------------------------------------
+|-> IP serveur    : (ox-proc254)            -> "54.38.46.164"
+|                   (IP serveur - attribuée par OVH)
+|-> IP Gateway's  : (ox-proc254)            -> "87.98.163.132/32"
+|                   (IP pfSense - attribuée par ???)
+|				   (IP pfsense - patte vers l'extérieure)
+|-> IP WAN        : (vtnet0 - vmbr0)        -> "87.98.163.132/32"
+|                   (IP vers le serveur)
+|                   * IP Upstream gtw      -> "okgw1 - 54.38.46.254"
+------------------------------------------------------------------------------------
+|-> Réseau Local  : (vtnet1 - lan - vmbr1 ) -> "10.20.1.1/24"
+|                   * (IP vers le réseau local)
+                    * Domain name          -> oken.local
+                    * Subnet               -> "10.20.1.0"
+|					* Gateway              -> "10.20.1.1"
+AF					* Range                -> "10.20.1.10" to "10.20.1.245"
+|					* Brodcast             -> "10.20.1.255"
+AF					* DNS                  -> "10.20.1"
+|					* Router               -> none
+------------------------------------------------------------------------------------
+|-> Autres Réseaux (NOM *périph,interface,card -> "IP")
+|        *   PROD : (em0- opt1(lan2)-vmbr2) -> "172.100.1.1/24"
+|		            * (IP vers le réseau PROD)				                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    sve
+|					* Subnet               -> "172.100.1.0"
+                    * Gateway              -> "172.100.1.254"
+AF					* Range                -> "172.100.1.10" to "172.100.1.245"
+|					* Brodcast             -> "172.100.1.255"
+AF					* DNS                  -> "..."
+|					* Router               -> none
+------------------------------------------------------------------------------------
+|	    * PREPROD: (em1-opt3(lan3)-vmbr4)  -> "102.100.1.1/24"
+|		            * (IP vers le réseau PREPROD)
+                    * Subnet               -> "102.100.1.0"
+|					* Gateway              -> "102.100.1.254"
+AF					* Range                -> "102.100.1.10" to "102.100.1.254"
+|					* Brodcast             -> "102.100.1.255"
+AF					* DNS                  -> "..."
+|					* Router               -> none
+------------------------------------------------------------------------------------
+|	    * OPENVPN: (ovpns1-opt2(VPN)-vmb3) -> "10.10.100.1/24"
+                    * Subnet               -> "10.10.100.0"
+|		            * Gateway              -> "10.10.100.254"
+AF					* Range                -> "10.10.100.10" to "10.10.100.254"
+|					* Brodcast             -> "10.10.100.255"
+AF					* DNS                  -> "..."
+|					* Router               -> none
+------------------------------------------------------------------------------------
+|	    *     DEV : (em2-opt4(lan4)-vmbr5) -> "162.100.1.1/24"
+                    * subnet               -> "162.100.1.0"
+|		            * Gateway              -> "162.100.1.254"
+AF					* Range                -> "162.100.1.10" to "162.100.1.254"
+|					* Brodcast             -> "162.100.1.255"
+AF					* DNS                  -> "..."
+|					* Router               -> none
+------------------------------------------------------------------------------------
+|	    *     DMZ : (em3-opt5(lan5)-vmbr6) -> "192.168.20.1/24"
+                    * subnet               -> "192.168.20.0"
+|		            * Gateway              -> none
+AF					* Range                -> "192.168.20.10" to "192.168.20.254"
+|					* Brodcast             -> "192.168.20.255"
+AF					* DNS                  -> "192.168.1.1"
+|                   * Router               -> none
+|
+------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------
+---->> RESEAU LAN 1 -- FIREWALL -- RELIE AU SERVEUR ox-proc254 : 54.38.46.164 <<----
+------------------------------------------------------------------------------------
+|-> IP LAN1 : 10.20.1.1/24 (réseau local)
+|   *Gateway's LAN1 : 10.20.1.1 (pour sortir vers un réseau local-couche supérieure)
+|-> Ip VM 101 : 10.20.1.1 (VM pfSense dans réseau local)
+|   * Getaway : 10.20.1.245
+|-> Ip VM 102 : 10.20.1.10 (VM dans local network derrière pfSense - pfSense Web Interface)
+|   * Gateway : 10.20.1.245
+|   * Brodcast: 10.20.1.255
+|-> Ip VM 104 : 10.20.1.103 (VM test dans local network derrière pfSense)
+AF   * Gateway : 
+AF	 * Brodcast:
+|-> Ip VM 105 : 10.20.1.??? (installation OS incomplète)
+AF   * Gateway : 
+AF   * Brodcast:
+|-> IP interdites local network : 192.168.1.0 to 192.168.1.255
+    car il y a un risque de confusion avec les IP du réseau à domicile
+|    * Toutes les IP servants pour les DNS
+|    * Toutes les IP de Brodcast
+|    * L'IP du serveur OVH
+|    * L'IP de la gateway du serveur OVH
+AF   * 
+AF   * 
+AF
+------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------
+---->> RESEAU LAN 2 -- PROD -- RELIE AU FIREWALL -- SERA DISSOCIEE PLUS TARD <<-----
+------------------------------------------------------------------------------------
+|-->> IP LAN2  : 192.168.137.1/32 [range:192.168.137.2 to 192.168.137.254]
+|-> Ip VM 110  : 192.168.1.110
+|-> Ip VM 111  : 192.168.10.100
+AF-> Ip VM 112  : 
+AF-> Ip VM 113  : 
+AF-->> IP LAN3  : 
+AF-> Ip VM 130  : 
+AF-->> IP LAN4  : 
+AF-> Ip VM 140  : 
+AF-->> IP LAN5  : 
+AF-> Ip VM 150  : 
+
+------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------
+9)--> ADRESSES IP DU RESEAU - ADRESSAGE ET REGLES DE REDIRECTION -------------------
+------------------------------------------------------------------------------------
+| IP SOURCE - PORT SOURCE - IP DESTINATION - PORT DESTINATION - RULES
+           -             -                -                  - 
+           -             -                -                  - 
+           -             -                -                  - 
+           -             -                -                  - 
+           -             -                -                  - 
+           -             -                -                  - 
+           -             -                -                  - 
+           -             -                -                  - 
+
+------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------
+------------->>>> 10) Troubleshouting : pfsense - vpn - VMWARE <<<<-----------------
+--------------------------- DEBUGGER LE PROBLEME DE VPN ----------------------------
+------------------------------------------------------------------------------------
+| OBJ -> SUR L'ANCIEN Server (à partir des accès donné par Willem)
+| 
+|   * faire marcher le vpn pfsense (FWO1) 10.10.1.1
+|	* vérifier la version qui fonctionne ou non
+|	    -> la version qui fonctionne 
+|		-> Bundled Configurations:Archive/Config File Only
+|	* réinstaller le client VPN                         NON NECESSAIRE
+|	* certificat WAN                                      VERIFIE OK
+|	* certificat client                                   VERIFIE OK
+|	* installer une VM client sur mon poste             NON NECESSAIRE
+|	* récupérer les certificats                         NON NECESSAIRE
+|	* tester le VPN client-to-site                        Willem/OK
+AF	* Tester d'autres user	(créer un VM sur le MAC)     Hermann/
+AF                                  (idem)                  Loic/
+
+
+------------------------------------------------------------------------------------
+--->>> A VERIFIER ------------------------------------------------------------------
+------------------------------------------------------------------------------------
+AV * URGENT : communication IP VM111
+AV * Connexion Bureau à Distance
+AV * Nom de la machine : hadmin-Standard-PC-i440FX-PIIX-1996.local
+AV * Adresse : ms-rd://hadmin-Standard-PC-i440FX-PIIX-1996.local
+AV * hadmin
+AV * Ka...
+
+
+------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------
+--->>> 11) Entre les 2 serveurs, installation VPN site-to-site IPsec <<<------------
+------------------------------------------------------------------------------------
+|	* Vérifier qu'il y a un backup pour chaque config pfSense   OK
+|	* Vérifier qu'il y a un backup pour chaque VM               OK
+AF	* Effectuer un snapshot de chacun des pfSense           CF. SCRIPT 
+AF        - nom du script : "pfsense_remote_sauvegarde_wget.sh
+AF	* Se servir de Docker pour mettre en place des backups 
+AF  * Créer un VPN site-to-site connecté en permanence
+|         	* Serveur 1 -> "54.38.46.164"
+|	        * WAN     1 -> "87.98.163.132/32" 
+|	        * pfSense 1 -> "pfSenseFirewall.oken.local"
+|    	    * LAN     1 -> "10.20.1.1/24"
+|           * Local Ntw -> "172.20.1.0/24"
+|	        * VM LAN  1 -> "10.20.1.102"	
+|	        * GW LAN  1 -> "10.20.1.1"
+|	        * PREPROD 1 -> "182.100.1.1/24"
+|           * PROD    1 -> "172.100.1.1/24"
+
+|	        * Serveur 2 -> "51.15.21.218"
+|	        * WAN     2 -> "212.83.132.250/32"
+|	        * pfSense 2 -> ""
+|	        * LAN     2 -> "10.10.1.1/24" ou "10.10.1.0/24"
+|           * Local Ntw -> "172.30.1.0/24"
+|	        * VM LAN  2 -> "10.10.1.???"
+|           * GW LAN  2 -> "10.10.1.254" ou "10.10.1.245"
+|           * PREPROD 2 -> "172.16.100.254/24"
+|           * PROD    2 -> "192.168.100.254/24"
+
+------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------
+--------------------->>>> 12) AUTRES IMPORTANTS <<<<--------------------------------
+------------------------------------------------------------------------------------
+AF--> PUSH du travail de Loic
+AF        * Créer une VM pour recevoir "Ansible"
+AF        * Créer une VM (vmware compatible)
+AF        * Déployer le code de Loic (à la main)
+AF		  * Déployer automatiquement avec Ansible
+AF		  * Redéployer un nouveau JENKINS
+AF		  * Job JENKINS pour que le déploiement soit automatique
+
+AF--> Traçage des voitures
+AF        * Créer une VM pour recevoir le "Trackcar"
+AF		  * s'occupe de l'affichage et de recueillir les données
+AL		  * https://www.traccar.org/
+
+
+------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------
+--------------->>>> SUR PFSENSE CHANGER NOM DE DOMAINE <<<<-------------------------
+------------------------------------------------------------------------------------
+|  --> "oken.local" au lieu de "oken-consulting.local"      OK
+
+
+------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------
+----------------------->>>> SUR WINDOWS SERVER <<<<---------------------------------
+------------------------------------------------------------------------------------
+|3)--> CHANGER LE NOM DE DOMAINE "oken.local" au lieu de "PRODFILE"   OK
+|    * supprimer le nom de domaine déjà configuré                     OK 
+| 	 * vérifier la suppression des meta-données                       OK
+| 	 * nouveau nom de domaine                                         OK
+| 	 * nouveau NETBIOS name                                           OK
+|4)--> Créer des nouveaux bridges pour bien séparer chaque réseaux    OK
+
+
+------------------------------------------------------------------------------------
+--------------->>>>>> PARTITIONNER DES DISQUES DURS <<<<<<--------------------------
+------------------------------------------------------------------------------------
+4)--> Toutes les installations de Linux doivent être partitionner 
+      sur des volumes distincts)
+        * Voir comment partitionner une machine de production
+
+
+------------------------------------------------------------------------------------
+------------>>> METTRE EN PLACE DES PROXY APRES PARTITION <<<-----------------------
+------------------------------------------------------------------------------------
+5)--> Mettre en place un proxy (DMZ, accès internet, proxy squid)
+
+
+------------------------------------------------------------------------------------
+--------------->>>>>>>>> OBJECTIFS A VENIR DMZ <<<<<<<<<<---------------------------
+------------------------------------------------------------------------------------
+-> Réseaux à mettre en place (via conf. interfaces)
+ * Principes : En informatique il y a différents niveau de filtrage des requêtes/trafics
+	  * 1er niveau de filtrage (firewall)
+      * 2eme niveau de filtrage (proxy)
+	  * 3eme niveau
+ * pour cela il a fallu ajouter depuis proxmox sur le serveur
+ * network séparé                                                          EN COURS
+|      * network de PROD (assignements(em0 ; opt1) ; interface ; vérif)       OK
+| 	   * network de PREPROD (assignements(em1 ; opt3) ; interface ; vérif)    OK
+|      * network DEV (assignements(em2) ; interface ; vérif)                  OK
+|	   * Modification réseau VPN sans interruption de service                 OK
+|	   * network DMZ (assignements(em3) ; interface ; vérif)              	  OK
+	       - config VM pour DMZ
+		   - 1 service requêtes entrantes REVERSE PROXY
+		       * Apache
+			   * quand on rentre dans le réseau pour aller vers une machine
+			     on passe par là
+		       * règles de réorientation du trafic
+		   - 1 service requêtes sortantes PROXY
+               * Proxy squid
+			   * quand on va vers internet on passe par là
+               * règles de réorientation du trafic			   
+
+
+
+------------------------------------------------------------------------------------
+2)--> Créer une machine Windows Server 19 Essentials - A REVOIR ? ------------------
+------------------------------------------------------------------------------------
+        * (doit accueillir Active Directory pour gérer les utilisateurs)
+        * (les utilisateurs dans pfSense doivent être mappés/identifiés via l'Active Directory)
+        * (les utilisateurs de Gitlab mappés via Active Directory
+
+
+------------------------------------------------------------------------------------
+3)--> Déployer une machine avec l'outil Gitlab - A FAIRE ---------------------------
+------------------------------------------------------------------------------------
+(serveur Gitlab pour versioning)(revoir communication Teams)
+        * les users doivent être mappés sur Active Directory 
+		* installer avec du Docker -- le Gitlab doit pouvoir envoyer des mails
+        * permettre de travailler en groupe, configurer les environnements, 
+        * permettre de recevoir avoir des notifications (modif. de tickets, actions à faire) 
+        * Gitlab doit être déployé avec Docker Compose
+        * Gitlab doit être sauvegardé automatiquement (script : arrêter Gitlab ; sauvegarder Gitlab ; dans un répertoire avec un fichier type tar.gz
+        * 3 sauvegardes (sizer les disques) ; 
+SUR Gitlab
+--> Créer machine Linux
+--> OS ubuntu
+--> Consulter un Gitlab à partir d'un dockerfile
+--> Enrichir la version en ajoutant des éléments pour que fonctionne l'envoie de mails sur les adresses pro)
+--> Déployer un Gitlab à partir d'un dockerfile
+--> Déployer le travail de Loic sur un serveur qui sera dédié à l'environnement de Dev
+
+
+
+------------------------------------------------------------------------------------
+--------------->>>>>>> OBJECTIFS A VENIR APRES IPSEC <<<<<<<-------------------------
+------------------------------------------------------------------------------------
+6)--> Installer machine Linux et les configurer avec Ansible dans le squid (cf. installer Ansible AWX)
+  --> JENKINS
+  --> Docker
+  --> VM (named Tools)
+  --> Plan de sauvegarde et de restauration (très important)
+7) --> Faire en sorte que l'IP des machines ne soient pas modifiées 
+automatiquement par le service DHCP de pfSense
+
+
+
+
+--->>> APPRONFONDIR OU VOIR ULTERIEUREMENT
+-->> En utilisant 'putty' + 'pageant'
+      * http://marc.terrier.free.fr/docputty.old/Chapter8.html#pubkey
+      * http://marc.terrier.free.fr/docputty.old/Chapter9.html
+-->> Utiliser powerswhell (cle ssh key avec le ssh -i keygen)
+-->> Utiliser git consol
+
+
+
+--> Un bridge sur lequel les vm vont communiquer
+--> un vlan associé (300)
+--> éteindre pfSense
+--> une interface réseau (sur le bridge vmbr2 avec le tag vlan 300) exemple Prod
+--> les autres vm doivent être dans le même réseau
+
+
+-> PREPROD vlan 400
+-> DEV vlan ...
+-> les tags de vlan doivent permettre de s'y retrouver (vm, ip...)
+
+
+-> faire un vpn sur les deux serveurs
+-> set les interfaces sur les deux pfsenses
+-> set les bridge
+-> monter et activer les bridges sur les deux pfsenses
+
+
+-> vlan ok
+-> créer un serveur à graveline + conf
+-> cluster
+-> migrer l'une des machines pfsense sur le nouveau serveur 
+-> 
+
+
+
+NOMENCLATURE
+NODE PVE 1 --   ID   -- BRIDGE --  TAG    -- NAME          -- NETWORK or IPaddr -- RANGE from ... to ...          -- 
+-> WAN     -- server -- vmbr0  --  none   -- ovh           -- 87.98.163.132/32  -- none                           -- 
+-> LAN     -- VM 101 -- vmbr1  -- vlan100 -- pfense fwl    -- 10.1.100.10/24    -- 10.1.100.100 to 10.1.100.150   -- 
+-> Fwlctl  -- VM 200 -- vmbr1  -- vlan100 -- fedora        -- 10.1.100.103      -- none                           -- 
+-> PROD    -- VM 172 -- vmbr1  -- vlan200 -- ubu-srv-20.04 -- 172.100.1.10/24   -- 172.100.1.100 to 172.100.1.150 -- 
+-> PROD    -- VM 174 -- vmbr1  -- vlan200 -- ubu-srv-20.04 -- 172.100.1.100     -- none                           -- 
+-> PREPROD -- VM 182 -- vmbr1  -- vlan300 -- ubu-srv-20.04 -- 182.100.1.10/24   -- 182.100.1.100 to 182.100.1.150 -- 
+-> PREPROD -- VM 184 -- vmbr1  -- vlan300 -- ubu-srv-20.04 -- 182.100.1.100     -- none                           -- 
+-> DEV     -- VM 192 -- vmbr1  -- vlan400 -- ubu-srv-20.04 -- 192.100.1.10/24   -- 192.100.1.100 to 192.100.1.150 -- 
+-> DEV     -- VM 194 -- vmbr1  -- vlan400 -- ubu-srv-20.04 -- 192.100.1.100     -- none                           -- 
+
+
+
+NOMENCLATURE PVE2 -- PF02
+NODE PVE 2 --   ID   -- BRIDGE --  TAG    -- NAME          -- NETWORK or IPaddr -- RANGE from ... to ...          -- 
+-> WAN     -- server -- vmbr0  --  none   -- ovh           -- 87.98.173.126/32  -- none                           -- 
+-> LAN     -- VM201  -- vmbr1  -- vlan100 -- pfense fwl    -- 10.1.100.20/24    -- 10.1.100.29 to 10.1.100.245    -- 
+-> Fwlctl  -- VM 100 -- vmbr1  -- vlan100 -- fedora        -- 10.1.100.102      -- none                           -- 
+-> PROD    -- VM 172 -- vmbr1  -- vlan200 -- ubu-srv-20.04 -- 172.100.1.20/24   -- 172.100.1.151 to 172.100.1.199 -- 
+-> PROD    -- VM 174 -- vmbr1  -- vlan200 -- ubu-srv-20.04 -- 172.100.1.151     -- none                           -- 
+-> PREPROD -- VM 182 -- vmbr1  -- vlan300 -- ubu-srv-20.04 -- 182.100.1.20/24   -- 182.100.1.151 to 172.100.1.199 -- 
+-> PREPROD -- VM 184 -- vmbr1  -- vlan300 -- ubu-srv-20.04 -- 182.100.1.151     -- none                           -- 
+-> DEV     -- VM 192 -- vmbr1  -- vlan400 -- ubu-srv-20.04 -- 192.100.1.20/24   -- 192.100.1.151 to 172.100.1.199 -- 
+-> DEV     -- VM 194 -- vmbr1  -- vlan400 -- ubu-srv-20.04 -- 192.100.1.151     -- none                           -- 
+
+
+
+-----------------------------------------
+-- Installation des outils nécessaires --
+-----------------------------------------
+
+1-> Installer et configurer GitLab sur la VM pfSense de la CI/CD
+- fait
+
+2-> Installer et configurer Jenkins sur la VM pfSense de la CI/CD
+- fait
+
+3-> Installer et configurer GIT sur toutes les VM de la CI/CD
+- fait
+
+4-> Installer et configurer UFW sur toutes les VM de la CI/CD
+- fait
+
+5-> Installer et configurer Docker sur toutes les VM de la CI/CD
+- fait
+
+6-> Installer et configurer Docker Cmpose sur toutes les VM de la CI/CD
+- fait
+
+7-> Installer et configurer NPM/NVM sur toutes les VM de la CI/CD
+- fait
+
+8-> Installer et configurer NodeJS sur toutes les VM de la CI/CD
+- fait
+
+9-> Installer et configurer Maven sur toutes les VM de la CI/CD
+- fait
+
+10-> Installer et configurer Sonarqube sur une nouvelle VM de la CI/CD
+- fait
+
+11-> Installer et configurer Prometheus et Grafana sur une nouvelle les VM de la CI/CD
+- fait
+
+12-> Rédaction des scripts pour les plugins Jenkins et l'exécution de la pipeline CI/CD
+-> Fait
+
+13-> Configurer les plugins suivants sur Jenkins :
+-> Git - Fait
+-> GitLab server - Fait
+-> Maven - Fait
+-> SonarQube - Fait
+-> Java-jdk - Fait
+-> Docker - Fait
+-> Blue Ocean - Fait
+-> ...
+
+14) Configurer le système de Jenkins
+-> Server : Oken-cars server1 - Fait
+-> Server : Oken-cars server2 - Fait
+-> Server : Oken-cars server3 - Fait
+-> Server : Server de test Docker Compose - Fait
+
+15-> Configuration de Jenkins
+-> Users - Fait
+-> Credentials - Fait
+-> SSH keys - Fait
+-> Jenkins Access token - Fait
+-> GitLab access token - Fait
+-> Jenkins Trigger GitLab - Fait
+-> Pipeline CI/CD - Fait
+-> Notifications de mails - Fait
